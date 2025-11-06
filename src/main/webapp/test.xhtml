@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Test</title>
+</h:head>
+
+<h:body>
+    <p:panel header="Test Panel">
+        <h:outputText value="Si ves esto, JSF funciona correctamente"/>
+    </p:panel>
+
+    <p:panel header="Proveedores" style="margin-top: 1rem;">
+        <h:outputText value="Total: #{proveedorBean.totalProveedores}"/>
+    </p:panel>
+</h:body>
+</html>

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,6 +55,10 @@ public class ProveedorBean implements Serializable {
     @Setter
     private String criterioBusqueda;
 
+    // Lista de funcionalidades
+    @Getter
+    private List<String> funcionalidades;
+
     /**
      * Inicialización del bean
      */
@@ -64,6 +69,17 @@ public class ProveedorBean implements Serializable {
             nuevoProveedor = new ProveedorDTO();
             nuevoProveedor.setActivo(true);
             modoEdicion = false;
+
+            // Inicializar lista de funcionalidades
+            funcionalidades = Arrays.asList(
+                    "Gestión completa de proveedores (CRUD)",
+                    "Búsqueda y filtros avanzados",
+                    "Activación/Desactivación de proveedores",
+                    "Validaciones en tiempo real",
+                    "Gestión de productos (Próximamente)",
+                    "Órdenes de compra (Próximamente)",
+                    "Reportes en PDF (Próximamente)"
+            );
         } catch (Exception e) {
             log.error("Error al inicializar ProveedorBean", e);
             mostrarMensajeError("Error al cargar datos iniciales");

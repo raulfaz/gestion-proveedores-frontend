@@ -7,76 +7,50 @@
 
 <ui:composition template="/templates/layout.xhtml">
     <ui:define name="title">Gestión de Proveedores</ui:define>
+    <ui:define name="pageTitle">Proveedores</ui:define>
 
     <ui:define name="content">
         <h:form id="formProveedores">
-            <p:growl id="growl" showDetail="true" life="3000"/>
 
-            <div class="page-header">
-                <h2 class="page-title">
-                    <i class="pi pi-users"></i> Gestión de Proveedores
-                </h2>
-                <p:commandButton value="Nuevo Proveedor"
-                                 icon="pi pi-plus"
-                                 styleClass="p-button-success"
-                                 onclick="PF('dlgProveedor').show();"
-                                 action="#{proveedorBean.prepararNuevo()}"
-                                 update=":formDialog"
-                                 process="@this"/>
-            </div>
+            <!-- Toolbar -->
+            <p:toolbar styleClass="mb-3">
+                <p:toolbarGroup>
+                    <p:commandButton value="Nuevo"
+                                     icon="pi pi-plus"
+                                     styleClass="p-button-success"
+                                     onclick="PF('dlgProveedor').show();"
+                                     action="#{proveedorBean.prepararNuevo()}"
+                                     update=":formDialog"
+                                     process="@this"/>
 
-            <!-- Panel de Búsqueda -->
-            <p:panel header="Búsqueda" toggleable="true" collapsed="false"
-                     styleClass="search-panel">
-                <p:panelGrid columns="3" layout="grid">
-                    <p:inputText id="busqueda"
-                                 value="#{proveedorBean.criterioBusqueda}"
-                                 placeholder="Buscar por razón social..."
-                                 style="width: 100%;"/>
-
-                    <p:commandButton value="Buscar"
-                                     icon="pi pi-search"
-                                     action="#{proveedorBean.buscar()}"
+                    <p:commandButton value="Refrescar"
+                                     icon="pi pi-refresh"
+                                     action="#{proveedorBean.cargarProveedores()}"
                                      update="tablaProveedores"
-                                     styleClass="p-button-primary"/>
+                                     styleClass="p-button-info"/>
+                </p:toolbarGroup>
+            </p:toolbar>
 
-                    <p:commandButton value="Limpiar"
-                                     icon="pi pi-times"
-                                     action="#{proveedorBean.limpiarBusqueda()}"
-                                     update="tablaProveedores,busqueda"
-                                     styleClass="p-button-secondary"/>
-                </p:panelGrid>
-            </p:panel>
-
-            <!-- Tabla de Proveedores -->
+            <!-- Tabla -->
             <p:dataTable id="tablaProveedores"
                          value="#{proveedorBean.proveedores}"
                          var="proveedor"
-                         filteredValue="#{proveedorBean.proveedoresFiltrados}"
                          paginator="true"
                          rows="10"
-                         rowsPerPageTemplate="5,10,15,20"
-                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         currentPageReportTemplate="Mostrando {startRecord} - {endRecord} de {totalRecords} proveedores"
-                         emptyMessage="No se encontraron proveedores"
-                         styleClass="proveedores-table"
-                         reflow="true">
+                         emptyMessage="No hay proveedores registrados"
+                         styleClass="tabla-proveedores"
+                         stripedRows="true">
 
-                <p:column headerText="ID" sortBy="#{proveedor.id}" filterBy="#{proveedor.id}">
+                <p:column headerText="ID" style="width: 80px;">
                     <h:outputText value="#{proveedor.id}"/>
                 </p:column>
 
-                <p:column headerText="RUC" sortBy="#{proveedor.ruc}" filterBy="#{proveedor.ruc}">
+                <p:column headerText="RUC">
                     <h:outputText value="#{proveedor.ruc}"/>
                 </p:column>
 
-                <p:column headerText="Razón Social" sortBy="#{proveedor.razonSocial}"
-                          filterBy="#{proveedor.razonSocial}">
+                <p:column headerText="Razón Social">
                     <h:outputText value="#{proveedor.razonSocial}"/>
-                </p:column>
-
-                <p:column headerText="Nombre Comercial">
-                    <h:outputText value="#{proveedor.nombreComercial}"/>
                 </p:column>
 
                 <p:column headerText="Teléfono">
@@ -92,104 +66,64 @@
                            severity="#{proveedor.activo ? 'success' : 'danger'}"/>
                 </p:column>
 
-                <p:column headerText="Acciones" style="text-align: center; width: 200px;">
+                <p:column headerText="Acciones" style="text-align: center; width: 150px;">
                     <p:commandButton icon="pi pi-pencil"
                                      title="Editar"
                                      styleClass="p-button-warning p-button-sm"
                                      onclick="PF('dlgProveedor').show();"
                                      action="#{proveedorBean.prepararEdicion(proveedor)}"
                                      update=":formDialog"
-                                     process="@this">
-                    </p:commandButton>
-
-                    <p:commandButton icon="#{proveedor.activo ? 'pi pi-ban' : 'pi pi-check'}"
-                                     title="#{proveedor.activo ? 'Desactivar' : 'Activar'}"
-                                     styleClass="#{proveedor.activo ? 'p-button-danger' : 'p-button-success'} p-button-sm"
-                                     action="#{proveedorBean.cambiarEstado(proveedor)}"
-                                     update="tablaProveedores,:formProveedores:growl"
-                                     process="@this">
-                        <p:confirm header="Confirmación"
-                                   message="¿Está seguro de cambiar el estado?"
-                                   icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
+                                     process="@this"/>
 
                     <p:commandButton icon="pi pi-trash"
                                      title="Eliminar"
                                      styleClass="p-button-danger p-button-sm"
                                      action="#{proveedorBean.eliminar(proveedor)}"
-                                     update="tablaProveedores,:formProveedores:growl"
+                                     update="tablaProveedores"
                                      process="@this">
                         <p:confirm header="Confirmación"
-                                   message="¿Está seguro de eliminar este proveedor?"
+                                   message="¿Eliminar este proveedor?"
                                    icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
                 </p:column>
             </p:dataTable>
 
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Sí" type="button" styleClass="p-button-success ui-confirmdialog-yes"/>
-                <p:commandButton value="No" type="button" styleClass="p-button-danger ui-confirmdialog-no"/>
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"/>
             </p:confirmDialog>
         </h:form>
 
-        <!-- Diálogo de Crear/Editar Proveedor -->
+        <!-- Dialog -->
         <h:form id="formDialog">
             <p:dialog id="dlgProveedor"
-                      header="#{proveedorBean.modoEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor'}"
+                      header="#{proveedorBean.modoEdicion ? 'Editar' : 'Nuevo'} Proveedor"
                       widgetVar="dlgProveedor"
                       modal="true"
-                      showEffect="fade"
-                      hideEffect="fade"
-                      width="600"
-                      responsive="true">
+                      width="600">
 
-                <p:panelGrid columns="2" layout="grid" styleClass="form-grid">
-                    <p:outputLabel for="ruc" value="RUC: *"/>
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel for="ruc" value="RUC:"/>
                     <p:inputText id="ruc"
                                  value="#{proveedorBean.nuevoProveedor.ruc}"
                                  required="true"
-                                 requiredMessage="El RUC es obligatorio"
-                                 maxlength="13"
-                                 style="width: 100%;"/>
+                                 maxlength="13"/>
 
-                    <p:outputLabel for="razonSocial" value="Razón Social: *"/>
+                    <p:outputLabel for="razonSocial" value="Razón Social:"/>
                     <p:inputText id="razonSocial"
                                  value="#{proveedorBean.nuevoProveedor.razonSocial}"
                                  required="true"
-                                 requiredMessage="La razón social es obligatoria"
-                                 maxlength="200"
-                                 style="width: 100%;"/>
-
-                    <p:outputLabel for="nombreComercial" value="Nombre Comercial:"/>
-                    <p:inputText id="nombreComercial"
-                                 value="#{proveedorBean.nuevoProveedor.nombreComercial}"
-                                 maxlength="200"
-                                 style="width: 100%;"/>
-
-                    <p:outputLabel for="direccion" value="Dirección:"/>
-                    <p:inputTextarea id="direccion"
-                                     value="#{proveedorBean.nuevoProveedor.direccion}"
-                                     rows="3"
-                                     maxlength="300"
-                                     style="width: 100%;"/>
+                                 maxlength="200"/>
 
                     <p:outputLabel for="telefono" value="Teléfono:"/>
                     <p:inputText id="telefono"
                                  value="#{proveedorBean.nuevoProveedor.telefono}"
-                                 maxlength="20"
-                                 style="width: 100%;"/>
+                                 maxlength="20"/>
 
                     <p:outputLabel for="email" value="Email:"/>
                     <p:inputText id="email"
                                  value="#{proveedorBean.nuevoProveedor.email}"
-                                 maxlength="100"
-                                 style="width: 100%;"/>
-
-                    <p:outputLabel for="contacto" value="Contacto:"/>
-                    <p:inputText id="contacto"
-                                 value="#{proveedorBean.nuevoProveedor.contacto}"
-                                 maxlength="150"
-                                 style="width: 100%;"/>
+                                 maxlength="100"/>
 
                     <p:outputLabel for="activo" value="Activo:"/>
                     <p:selectBooleanCheckbox id="activo"
@@ -198,18 +132,16 @@
 
                 <f:facet name="footer">
                     <p:commandButton value="Guardar"
-                                     icon="pi pi-check"
+                                     icon="pi pi-save"
                                      styleClass="p-button-success"
                                      action="#{proveedorBean.guardar()}"
-                                     update=":formProveedores:tablaProveedores,:formProveedores:growl"
-                                     oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgProveedor').hide();"/>
+                                     update=":formProveedores:tablaProveedores"
+                                     oncomplete="if (!args.validationFailed) PF('dlgProveedor').hide();"/>
 
                     <p:commandButton value="Cancelar"
                                      icon="pi pi-times"
-                                     styleClass="p-button-secondary"
                                      onclick="PF('dlgProveedor').hide();"
-                                     action="#{proveedorBean.cancelar()}"
-                                     process="@this"/>
+                                     type="button"/>
                 </f:facet>
             </p:dialog>
         </h:form>

@@ -60,7 +60,6 @@
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <version>${jakarta.cdi.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Weld (Implementación CDI) -->

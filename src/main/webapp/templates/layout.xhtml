@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets"
       xmlns:p="http://primefaces.org/ui">
 
@@ -12,51 +11,99 @@
     <h:outputStylesheet library="css" name="styles.css"/>
 </h:head>
 
-<h:body>
-    <div class="layout-wrapper">
-        <!-- Header -->
-        <header class="layout-header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <i class="pi pi-building" style="font-size: 2rem; color: #fff;"></i>
-                    <h1>Sistema de Gestión de Proveedores</h1>
-                </div>
-                <div class="user-section">
+<h:body styleClass="layout-body">
+
+    <p:layout fullPage="true" styleClass="layout-main">
+
+        <!-- WEST: Sidebar Navigation -->
+        <p:layoutUnit position="west" size="280" styleClass="layout-sidebar" resizable="false" closable="false" collapsible="true">
+
+            <h:panelGroup layout="block" styleClass="sidebar-header">
+                <i class="pi pi-building sidebar-logo"></i>
+                <h3 class="sidebar-title">Gestión Proveedores</h3>
+                <p class="sidebar-subtitle">Sistema Empresarial</p>
+            </h:panelGroup>
+
+            <h:form styleClass="sidebar-menu-form">
+                <p:panelMenu styleClass="sidebar-menu">
+
+                    <p:submenu label="Dashboard" icon="pi pi-home" expanded="true">
+                        <p:menuitem value="Inicio" icon="pi pi-chart-line" outcome="/index.xhtml"/>
+                        <p:menuitem value="Estadísticas" icon="pi pi-chart-bar" disabled="true"/>
+                    </p:submenu>
+
+                    <p:submenu label="Gestión" icon="pi pi-briefcase" expanded="true">
+                        <p:menuitem value="Proveedores" icon="pi pi-users" outcome="/proveedores/listar.xhtml"/>
+                        <p:menuitem value="Productos" icon="pi pi-box" disabled="true"/>
+                        <p:menuitem value="Órdenes de Compra" icon="pi pi-shopping-cart" disabled="true"/>
+                    </p:submenu>
+
+                    <p:submenu label="Reportes" icon="pi pi-file">
+                        <p:menuitem value="Proveedores" icon="pi pi-file-pdf" disabled="true"/>
+                        <p:menuitem value="Productos" icon="pi pi-file-excel" disabled="true"/>
+                        <p:menuitem value="Órdenes" icon="pi pi-chart-pie" disabled="true"/>
+                    </p:submenu>
+
+                    <p:submenu label="Configuración" icon="pi pi-cog">
+                        <p:menuitem value="Mi Perfil" icon="pi pi-user" disabled="true"/>
+                        <p:menuitem value="Preferencias" icon="pi pi-sliders-h" disabled="true"/>
+                        <p:menuitem value="Seguridad" icon="pi pi-lock" disabled="true"/>
+                    </p:submenu>
+
+                </p:panelMenu>
+            </h:form>
+
+            <h:panelGroup layout="block" styleClass="sidebar-footer">
+                <p class="sidebar-footer-item">
                     <i class="pi pi-user"></i>
                     <span>Usuario: Admin</span>
-                </div>
-            </div>
-        </header>
+                </p>
+                <p class="sidebar-footer-item">
+                    <i class="pi pi-calendar"></i>
+                    <span>2025-11-06</span>
+                </p>
+                <p class="sidebar-footer-version">v1.0.0</p>
+            </h:panelGroup>
 
-        <!-- Navigation Menu -->
-        <nav class="layout-menu">
-            <p:menubar>
-                <p:menuitem value="Inicio" icon="pi pi-home" url="/index.xhtml"/>
-                <p:menuitem value="Proveedores" icon="pi pi-users" url="/proveedores/listar.xhtml"/>
-                <p:menuitem value="Productos" icon="pi pi-box" url="#"/>
-                <p:menuitem value="Órdenes de Compra" icon="pi pi-shopping-cart" url="#"/>
-                <p:menuitem value="Reportes" icon="pi pi-chart-bar" url="#"/>
-            </p:menubar>
-        </nav>
+        </p:layoutUnit>
 
-        <!-- Main Content -->
-        <main class="layout-content">
-            <p:growl id="messages" showDetail="true" life="3000"/>
+        <!-- NORTH: Top Bar -->
+        <p:layoutUnit position="north" size="70" styleClass="layout-topbar">
+            <h:panelGroup layout="block" styleClass="topbar-content">
+                <h:panelGroup layout="block" styleClass="topbar-left">
+                    <h2 class="topbar-title">
+                        <ui:insert name="pageTitle">Dashboard</ui:insert>
+                    </h2>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="topbar-right">
+                    <p:commandButton icon="pi pi-bell" styleClass="p-button-rounded p-button-text p-button-plain" title="Notificaciones"/>
+                    <p:commandButton icon="pi pi-envelope" styleClass="p-button-rounded p-button-text p-button-plain" title="Mensajes"/>
+                    <p:commandButton icon="pi pi-user" styleClass="p-button-rounded p-button-text p-button-plain" title="Perfil"/>
+                </h:panelGroup>
+            </h:panelGroup>
+        </p:layoutUnit>
 
-            <div class="content-wrapper">
+        <!-- CENTER: Main Content -->
+        <p:layoutUnit position="center" styleClass="layout-content">
+            <p:growl id="globalMessages" showDetail="true" life="3000"/>
+
+            <h:panelGroup layout="block" styleClass="content-wrapper">
                 <ui:insert name="content">
-                    <!-- Content will be inserted here -->
+                    <p>Contenido por defecto</p>
                 </ui:insert>
-            </div>
-        </main>
+            </h:panelGroup>
+        </p:layoutUnit>
 
-        <!-- Footer -->
-        <footer class="layout-footer">
-            <div class="footer-content">
-                <p>© 2024 Sistema de Gestión de Proveedores - Todos los derechos reservados</p>
-                <p>Desarrollado con JSF + PrimeFaces + Jakarta EE</p>
-            </div>
-        </footer>
-    </div>
+        <!-- SOUTH: Footer -->
+        <p:layoutUnit position="south" size="50" styleClass="layout-footer">
+            <p class="footer-text">
+                <span class="footer-copy">© 2025 Sistema de Gestión de Proveedores</span>
+                <span class="footer-separator">|</span>
+                <span class="footer-tech">Powered by JSF 4.0 + PrimeFaces 14.0 + Jakarta EE</span>
+            </p>
+        </p:layoutUnit>
+
+    </p:layout>
+
 </h:body>
 </html>

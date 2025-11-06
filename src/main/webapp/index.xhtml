@@ -6,113 +6,169 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/templates/layout.xhtml">
-    <ui:define name="title">Inicio - Gestión de Proveedores</ui:define>
+
+    <f:metadata>
+        <f:viewAction action="#{proveedorBean.init}"/>
+    </f:metadata>
+
+    <ui:define name="title">Dashboard - Gestión de Proveedores</ui:define>
+    <ui:define name="pageTitle">Dashboard</ui:define>
 
     <ui:define name="content">
-        <div class="dashboard-container">
-            <h2 class="page-title">
-                <i class="pi pi-home"></i> Panel Principal
-            </h2>
 
-            <!-- Cards de Estadísticas -->
-            <div class="dashboard-cards">
-                <div class="card card-primary">
-                    <div class="card-icon">
-                        <i class="pi pi-users"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Proveedores</h3>
-                        <p class="card-number">#{proveedorBean.totalProveedores}</p>
-                        <p class="card-label">Total registrados</p>
-                    </div>
-                </div>
+        <!-- Stats Cards Row -->
+        <h:panelGroup layout="block" styleClass="dashboard-stats">
 
-                <div class="card card-success">
-                    <div class="card-icon">
-                        <i class="pi pi-check-circle"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Activos</h3>
-                        <p class="card-number">#{proveedorBean.totalProveedoresActivos}</p>
-                        <p class="card-label">Proveedores activos</p>
-                    </div>
-                </div>
+            <!-- Card 1: Total Proveedores -->
+            <h:panelGroup layout="block" styleClass="stat-card stat-card-primary">
+                <h:panelGroup layout="block" styleClass="stat-card-icon">
+                    <i class="pi pi-users"></i>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="stat-card-content">
+                    <h:outputText value="#{proveedorBean.totalProveedores}" styleClass="stat-card-number"/>
+                    <p class="stat-card-label">Total Proveedores</p>
+                </h:panelGroup>
+            </h:panelGroup>
 
-                <div class="card card-info">
-                    <div class="card-icon">
-                        <i class="pi pi-box"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Productos</h3>
-                        <p class="card-number">0</p>
-                        <p class="card-label">Total en catálogo</p>
-                    </div>
-                </div>
+            <!-- Card 2: Proveedores Activos -->
+            <h:panelGroup layout="block" styleClass="stat-card stat-card-success">
+                <h:panelGroup layout="block" styleClass="stat-card-icon">
+                    <i class="pi pi-check-circle"></i>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="stat-card-content">
+                    <h:outputText value="#{proveedorBean.totalProveedoresActivos}" styleClass="stat-card-number"/>
+                    <p class="stat-card-label">Proveedores Activos</p>
+                </h:panelGroup>
+            </h:panelGroup>
 
-                <div class="card card-warning">
-                    <div class="card-icon">
-                        <i class="pi pi-shopping-cart"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Órdenes</h3>
-                        <p class="card-number">0</p>
-                        <p class="card-label">Órdenes pendientes</p>
-                    </div>
-                </div>
-            </div>
+            <!-- Card 3: Productos -->
+            <h:panelGroup layout="block" styleClass="stat-card stat-card-info">
+                <h:panelGroup layout="block" styleClass="stat-card-icon">
+                    <i class="pi pi-box"></i>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="stat-card-content">
+                    <h:outputText value="0" styleClass="stat-card-number"/>
+                    <p class="stat-card-label">Productos en Catálogo</p>
+                </h:panelGroup>
+            </h:panelGroup>
 
-            <!-- Accesos Rápidos -->
-            <div class="quick-access">
-                <h3><i class="pi pi-bolt"></i> Accesos Rápidos</h3>
-                <div class="quick-access-grid">
-                    <h:form>
-                        <p:commandButton value="Gestionar Proveedores"
-                                         icon="pi pi-users"
-                                         styleClass="p-button-lg p-button-primary"
-                                         action="/proveedores/listar.xhtml?faces-redirect=true"/>
+            <!-- Card 4: Órdenes -->
+            <h:panelGroup layout="block" styleClass="stat-card stat-card-warning">
+                <h:panelGroup layout="block" styleClass="stat-card-icon">
+                    <i class="pi pi-shopping-cart"></i>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="stat-card-content">
+                    <h:outputText value="0" styleClass="stat-card-number"/>
+                    <p class="stat-card-label">Órdenes Pendientes</p>
+                </h:panelGroup>
+            </h:panelGroup>
 
-                        <p:commandButton value="Nuevo Proveedor"
-                                         icon="pi pi-plus"
-                                         styleClass="p-button-lg p-button-success"
-                                         action="/proveedores/listar.xhtml?faces-redirect=true"/>
+        </h:panelGroup>
 
-                        <p:button value="Ver Productos"
-                                  icon="pi pi-box"
-                                  styleClass="p-button-lg p-button-info"
-                                  disabled="true"/>
+        <!-- Quick Actions Panel -->
+        <p:panel header="Accesos Rápidos" styleClass="dashboard-panel">
+            <h:form>
+                <h:panelGroup layout="block" styleClass="quick-actions">
+                    <p:commandButton value="Nuevo Proveedor"
+                                     icon="pi pi-plus"
+                                     styleClass="p-button-lg p-button-success quick-action-btn"
+                                     action="/proveedores/listar.xhtml?faces-redirect=true"/>
 
-                        <p:button value="Reportes"
-                                  icon="pi pi-chart-bar"
-                                  styleClass="p-button-lg p-button-warning"
-                                  disabled="true"/>
-                    </h:form>
-                </div>
-            </div>
+                    <p:commandButton value="Ver Proveedores"
+                                     icon="pi pi-list"
+                                     styleClass="p-button-lg p-button-primary quick-action-btn"
+                                     action="/proveedores/listar.xhtml?faces-redirect=true"/>
 
-            <!-- Panel de Información -->
-            <p:panel header="Bienvenido al Sistema de Gestión de Proveedores"
-                     styleClass="welcome-panel">
-                <p:panelGrid columns="1" layout="grid">
-                    <p>
-                        <i class="pi pi-info-circle"></i>
-                        Este sistema le permite gestionar de manera eficiente toda la información
-                        relacionada con sus proveedores, productos y órdenes de compra.
-                    </p>
-                    <p>
-                        <strong>Funcionalidades principales:</strong>
-                    </p>
-                    <ul>
-                        <li>Registro y actualización de proveedores</li>
-                        <li>Gestión de catálogo de productos</li>
-                        <li>Control de órdenes de compra</li>
-                        <li>Generación de reportes</li>
-                    </ul>
+                    <p:commandButton value="Gestionar Productos"
+                                     icon="pi pi-box"
+                                     styleClass="p-button-lg p-button-info quick-action-btn"
+                                     disabled="true"/>
+
+                    <p:commandButton value="Nueva Orden"
+                                     icon="pi pi-shopping-cart"
+                                     styleClass="p-button-lg p-button-warning quick-action-btn"
+                                     disabled="true"/>
+
+                    <p:commandButton value="Ver Reportes"
+                                     icon="pi pi-chart-bar"
+                                     styleClass="p-button-lg p-button-help quick-action-btn"
+                                     disabled="true"/>
+
+                    <p:commandButton value="Configuración"
+                                     icon="pi pi-cog"
+                                     styleClass="p-button-lg p-button-secondary quick-action-btn"
+                                     disabled="true"/>
+                </h:panelGroup>
+            </h:form>
+        </p:panel>
+
+        <!-- Info Grid -->
+        <h:panelGroup layout="block" styleClass="dashboard-grid">
+
+            <!-- Sistema Info -->
+            <p:panel header="Información del Sistema" styleClass="dashboard-panel">
+                <p:panelGrid columns="2" layout="grid" styleClass="info-grid">
+                    <h:outputText value="Versión:" styleClass="label-bold"/>
+                    <h:outputText value="1.0.0"/>
+
+                    <h:outputText value="Backend:" styleClass="label-bold"/>
+                    <h:outputText value="Spring Boot 3.5.7"/>
+
+                    <h:outputText value="Frontend:" styleClass="label-bold"/>
+                    <h:outputText value="JSF 4.0 + PrimeFaces 14.0"/>
+
+                    <h:outputText value="Base de Datos:" styleClass="label-bold"/>
+                    <h:outputText value="PostgreSQL 16"/>
+
+                    <h:outputText value="Servidor:" styleClass="label-bold"/>
+                    <h:outputText value="Apache Tomcat 10.1.48"/>
+
+                    <h:outputText value="Java:" styleClass="label-bold"/>
+                    <h:outputText value="OpenJDK 21"/>
                 </p:panelGrid>
             </p:panel>
-        </div>
 
-        <f:metadata>
-            <f:viewAction action="#{proveedorBean.init}"/>
-        </f:metadata>
+            <!-- Funcionalidades -->
+            <p:panel header="Módulos Disponibles" styleClass="dashboard-panel">
+                <h:panelGroup layout="block" styleClass="features-list">
+                    <p class="feature-item feature-active">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Gestión completa de proveedores (CRUD)</span>
+                    </p>
+                    <p class="feature-item feature-active">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Búsqueda y filtros avanzados</span>
+                    </p>
+                    <p class="feature-item feature-active">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Activación y desactivación de registros</span>
+                    </p>
+                    <p class="feature-item feature-active">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Validaciones en tiempo real</span>
+                    </p>
+                    <p class="feature-item feature-inactive">
+                        <i class="pi pi-clock"></i>
+                        <span>Gestión de productos (Próximamente)</span>
+                    </p>
+                    <p class="feature-item feature-inactive">
+                        <i class="pi pi-clock"></i>
+                        <span>Órdenes de compra (Próximamente)</span>
+                    </p>
+                    <p class="feature-item feature-inactive">
+                        <i class="pi pi-clock"></i>
+                        <span>Reportes PDF y Excel (Próximamente)</span>
+                    </p>
+                    <p class="feature-item feature-inactive">
+                        <i class="pi pi-clock"></i>
+                        <span>Dashboard de analíticas (Próximamente)</span>
+                    </p>
+                </h:panelGroup>
+            </p:panel>
+
+        </h:panelGroup>
+
     </ui:define>
+
 </ui:composition>
+</html>
