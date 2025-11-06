@@ -16,6 +16,19 @@
 
     <ui:define name="content">
 
+        <!-- Bienvenida -->
+        <p:panel styleClass="dashboard-panel mb-3">
+            <h:panelGroup layout="block" style="text-align: center; padding: 2rem;">
+                <i class="pi pi-building" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h1 style="font-size: 2.5rem; margin: 0; color: var(--text-primary);">
+                    Bienvenido al Sistema de Gestión de Proveedores
+                </h1>
+                <p style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Administre eficientemente sus proveedores, productos y órdenes de compra
+                </p>
+            </h:panelGroup>
+        </p:panel>
+
         <!-- Stats Cards Row -->
         <h:panelGroup layout="block" styleClass="dashboard-stats">
 
@@ -25,7 +38,8 @@
                     <i class="pi pi-users"></i>
                 </h:panelGroup>
                 <h:panelGroup layout="block" styleClass="stat-card-content">
-                    <h:outputText value="#{proveedorBean.totalProveedores}" styleClass="stat-card-number"/>
+                    <h:outputText value="#{proveedorBean.totalProveedores}"
+                                  styleClass="stat-card-number"/>
                     <p class="stat-card-label">Total Proveedores</p>
                 </h:panelGroup>
             </h:panelGroup>
@@ -36,7 +50,8 @@
                     <i class="pi pi-check-circle"></i>
                 </h:panelGroup>
                 <h:panelGroup layout="block" styleClass="stat-card-content">
-                    <h:outputText value="#{proveedorBean.totalProveedoresActivos}" styleClass="stat-card-number"/>
+                    <h:outputText value="#{proveedorBean.totalProveedoresActivos}"
+                                  styleClass="stat-card-number"/>
                     <p class="stat-card-label">Proveedores Activos</p>
                 </h:panelGroup>
             </h:panelGroup>
@@ -69,34 +84,35 @@
         <p:panel header="Accesos Rápidos" styleClass="dashboard-panel">
             <h:form>
                 <h:panelGroup layout="block" styleClass="quick-actions">
+
                     <p:commandButton value="Nuevo Proveedor"
                                      icon="pi pi-plus"
-                                     styleClass="p-button-lg p-button-success quick-action-btn"
+                                     styleClass="p-button-success quick-action-btn"
                                      action="/proveedores/listar.xhtml?faces-redirect=true"/>
 
                     <p:commandButton value="Ver Proveedores"
                                      icon="pi pi-list"
-                                     styleClass="p-button-lg p-button-primary quick-action-btn"
+                                     styleClass="p-button-primary quick-action-btn"
                                      action="/proveedores/listar.xhtml?faces-redirect=true"/>
 
                     <p:commandButton value="Gestionar Productos"
                                      icon="pi pi-box"
-                                     styleClass="p-button-lg p-button-info quick-action-btn"
+                                     styleClass="p-button-info quick-action-btn"
                                      disabled="true"/>
 
                     <p:commandButton value="Nueva Orden"
                                      icon="pi pi-shopping-cart"
-                                     styleClass="p-button-lg p-button-warning quick-action-btn"
+                                     styleClass="p-button-warning quick-action-btn"
                                      disabled="true"/>
 
                     <p:commandButton value="Ver Reportes"
                                      icon="pi pi-chart-bar"
-                                     styleClass="p-button-lg p-button-help quick-action-btn"
+                                     styleClass="p-button-help quick-action-btn"
                                      disabled="true"/>
 
                     <p:commandButton value="Configuración"
                                      icon="pi pi-cog"
-                                     styleClass="p-button-lg p-button-secondary quick-action-btn"
+                                     styleClass="p-button-secondary quick-action-btn"
                                      disabled="true"/>
                 </h:panelGroup>
             </h:form>
@@ -121,7 +137,7 @@
                     <h:outputText value="PostgreSQL 16"/>
 
                     <h:outputText value="Servidor:" styleClass="label-bold"/>
-                    <h:outputText value="Apache Tomcat 10.1.48"/>
+                    <h:outputText value="Apache Tomcat 10.1"/>
 
                     <h:outputText value="Java:" styleClass="label-bold"/>
                     <h:outputText value="OpenJDK 21"/>
@@ -129,44 +145,120 @@
             </p:panel>
 
             <!-- Funcionalidades -->
-            <p:panel header="Módulos Disponibles" styleClass="dashboard-panel">
+            <p:panel header="Módulos del Sistema" styleClass="dashboard-panel">
                 <h:panelGroup layout="block" styleClass="features-list">
+
                     <p class="feature-item feature-active">
                         <i class="pi pi-check-circle"></i>
                         <span>Gestión completa de proveedores (CRUD)</span>
                     </p>
+
                     <p class="feature-item feature-active">
                         <i class="pi pi-check-circle"></i>
                         <span>Búsqueda y filtros avanzados</span>
                     </p>
+
                     <p class="feature-item feature-active">
                         <i class="pi pi-check-circle"></i>
                         <span>Activación y desactivación de registros</span>
                     </p>
+
                     <p class="feature-item feature-active">
                         <i class="pi pi-check-circle"></i>
                         <span>Validaciones en tiempo real</span>
                     </p>
+
                     <p class="feature-item feature-inactive">
                         <i class="pi pi-clock"></i>
                         <span>Gestión de productos (Próximamente)</span>
                     </p>
+
                     <p class="feature-item feature-inactive">
                         <i class="pi pi-clock"></i>
                         <span>Órdenes de compra (Próximamente)</span>
                     </p>
+
                     <p class="feature-item feature-inactive">
                         <i class="pi pi-clock"></i>
                         <span>Reportes PDF y Excel (Próximamente)</span>
                     </p>
+
                     <p class="feature-item feature-inactive">
                         <i class="pi pi-clock"></i>
                         <span>Dashboard de analíticas (Próximamente)</span>
                     </p>
+
                 </h:panelGroup>
             </p:panel>
 
         </h:panelGroup>
+
+        <!-- Información Adicional -->
+        <p:panel header="Características Técnicas" styleClass="dashboard-panel mt-3">
+            <h:panelGroup layout="block" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+                <div>
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">
+                        <i class="pi pi-shield"></i> Seguridad
+                    </h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Validaciones en backend y frontend
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Manejo de errores robusto
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Arquitectura REST segura
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--info); margin-bottom: 1rem;">
+                        <i class="pi pi-bolt"></i> Rendimiento
+                    </h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Pool de conexiones HTTP optimizado
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Caché de datos eficiente
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Paginación de resultados
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--success); margin-bottom: 1rem;">
+                        <i class="pi pi-mobile"></i> Responsivo
+                    </h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Diseño adaptable
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Compatible con dispositivos móviles
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <i class="pi pi-check" style="color: var(--success);"></i>
+                            Interfaz moderna y limpia
+                        </li>
+                    </ul>
+                </div>
+
+            </h:panelGroup>
+        </p:panel>
 
     </ui:define>
 
