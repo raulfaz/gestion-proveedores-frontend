@@ -13,6 +13,7 @@ import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
@@ -57,7 +58,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData() != null ? apiResponse.getData() : new ArrayList<>();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al listar proveedores", e);
             throw new ServiceException("Error al obtener la lista de proveedores", e);
         }
@@ -81,7 +82,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData() != null ? apiResponse.getData() : new ArrayList<>();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al listar proveedores activos", e);
             throw new ServiceException("Error al obtener proveedores activos", e);
         }
@@ -105,7 +106,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al buscar proveedor por ID: {}", id, e);
             throw new ServiceException("Error al buscar el proveedor", e);
         }
@@ -129,7 +130,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData() != null ? apiResponse.getData() : new ArrayList<>();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al buscar proveedores por razón social", e);
             throw new ServiceException("Error al buscar proveedores", e);
         }
@@ -156,7 +157,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al crear proveedor", e);
             throw new ServiceException("Error al crear el proveedor", e);
         }
@@ -183,7 +184,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al actualizar proveedor ID: {}", id, e);
             throw new ServiceException("Error al actualizar el proveedor", e);
         }
@@ -227,7 +228,7 @@ public class ProveedorService implements Serializable {
 
                 return apiResponse.getData();
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             log.error("Error al cambiar estado del proveedor ID: {}", id, e);
             throw new ServiceException("Error al cambiar el estado del proveedor", e);
         }
