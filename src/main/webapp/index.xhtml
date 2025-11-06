@@ -1,5 +1,118 @@
-<html>
-<body>
-<h2><%= "Hello World!" %></h2>
-</body>
-</html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Inicio - Gestión de Proveedores</ui:define>
+
+    <ui:define name="content">
+        <div class="dashboard-container">
+            <h2 class="page-title">
+                <i class="pi pi-home"></i> Panel Principal
+            </h2>
+
+            <!-- Cards de Estadísticas -->
+            <div class="dashboard-cards">
+                <div class="card card-primary">
+                    <div class="card-icon">
+                        <i class="pi pi-users"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Proveedores</h3>
+                        <p class="card-number">#{proveedorBean.totalProveedores}</p>
+                        <p class="card-label">Total registrados</p>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <div class="card-icon">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Activos</h3>
+                        <p class="card-number">#{proveedorBean.totalProveedoresActivos}</p>
+                        <p class="card-label">Proveedores activos</p>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <div class="card-icon">
+                        <i class="pi pi-box"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Productos</h3>
+                        <p class="card-number">0</p>
+                        <p class="card-label">Total en catálogo</p>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <div class="card-icon">
+                        <i class="pi pi-shopping-cart"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Órdenes</h3>
+                        <p class="card-number">0</p>
+                        <p class="card-label">Órdenes pendientes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesos Rápidos -->
+            <div class="quick-access">
+                <h3><i class="pi pi-bolt"></i> Accesos Rápidos</h3>
+                <div class="quick-access-grid">
+                    <h:form>
+                        <p:commandButton value="Gestionar Proveedores"
+                                         icon="pi pi-users"
+                                         styleClass="p-button-lg p-button-primary"
+                                         action="/proveedores/listar.xhtml?faces-redirect=true"/>
+
+                        <p:commandButton value="Nuevo Proveedor"
+                                         icon="pi pi-plus"
+                                         styleClass="p-button-lg p-button-success"
+                                         action="/proveedores/listar.xhtml?faces-redirect=true"/>
+
+                        <p:button value="Ver Productos"
+                                  icon="pi pi-box"
+                                  styleClass="p-button-lg p-button-info"
+                                  disabled="true"/>
+
+                        <p:button value="Reportes"
+                                  icon="pi pi-chart-bar"
+                                  styleClass="p-button-lg p-button-warning"
+                                  disabled="true"/>
+                    </h:form>
+                </div>
+            </div>
+
+            <!-- Panel de Información -->
+            <p:panel header="Bienvenido al Sistema de Gestión de Proveedores"
+                     styleClass="welcome-panel">
+                <p:panelGrid columns="1" layout="grid">
+                    <p>
+                        <i class="pi pi-info-circle"></i>
+                        Este sistema le permite gestionar de manera eficiente toda la información
+                        relacionada con sus proveedores, productos y órdenes de compra.
+                    </p>
+                    <p>
+                        <strong>Funcionalidades principales:</strong>
+                    </p>
+                    <ul>
+                        <li>Registro y actualización de proveedores</li>
+                        <li>Gestión de catálogo de productos</li>
+                        <li>Control de órdenes de compra</li>
+                        <li>Generación de reportes</li>
+                    </ul>
+                </p:panelGrid>
+            </p:panel>
+        </div>
+
+        <f:metadata>
+            <f:viewAction action="#{proveedorBean.init}"/>
+        </f:metadata>
+    </ui:define>
+</ui:composition>

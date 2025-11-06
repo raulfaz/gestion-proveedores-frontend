@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><ui:insert name="title">Gestión de Proveedores</ui:insert></title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+
+<h:body>
+    <div class="layout-wrapper">
+        <!-- Header -->
+        <header class="layout-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="pi pi-building" style="font-size: 2rem; color: #fff;"></i>
+                    <h1>Sistema de Gestión de Proveedores</h1>
+                </div>
+                <div class="user-section">
+                    <i class="pi pi-user"></i>
+                    <span>Usuario: Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Inicio" icon="pi pi-home" url="/index.xhtml"/>
+                <p:menuitem value="Proveedores" icon="pi pi-users" url="/proveedores/listar.xhtml"/>
+                <p:menuitem value="Productos" icon="pi pi-box" url="#"/>
+                <p:menuitem value="Órdenes de Compra" icon="pi pi-shopping-cart" url="#"/>
+                <p:menuitem value="Reportes" icon="pi pi-chart-bar" url="#"/>
+            </p:menubar>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="layout-content">
+            <p:growl id="messages" showDetail="true" life="3000"/>
+
+            <div class="content-wrapper">
+                <ui:insert name="content">
+                    <!-- Content will be inserted here -->
+                </ui:insert>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="layout-footer">
+            <div class="footer-content">
+                <p>© 2024 Sistema de Gestión de Proveedores - Todos los derechos reservados</p>
+                <p>Desarrollado con JSF + PrimeFaces + Jakarta EE</p>
+            </div>
+        </footer>
+    </div>
+</h:body>
+</html>

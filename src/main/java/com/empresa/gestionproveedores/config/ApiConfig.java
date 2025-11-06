@@ -3,26 +3,27 @@ package com.empresa.gestionproveedores.config;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.Getter;
 
+/**
+ * Configuración de la API REST
+ */
 @ApplicationScoped
 @Getter
 public class ApiConfig {
 
     private final String baseUrl = "http://localhost:8081/api";
+    private final String proveedoresEndpoint = "/proveedores";
+    private final String productosEndpoint = "/productos";
+    private final String ordenesEndpoint = "/ordenes-compra";
 
-    // Endpoints
     public String getProveedoresUrl() {
-        return baseUrl + "/proveedores";
+        return baseUrl + proveedoresEndpoint;
     }
 
     public String getProductosUrl() {
-        return baseUrl + "/productos";
+        return baseUrl + productosEndpoint;
     }
 
-    public String getOrdenesCompraUrl() {
-        return baseUrl + "/ordenes-compra";
+    public String getOrdenesUrl() {
+        return baseUrl + ordenesEndpoint;
     }
-
-    // Timeouts
-    private final int connectionTimeout = 30000; // 30 segundos
-    private final int socketTimeout = 30000;
 }

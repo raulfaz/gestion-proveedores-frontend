@@ -1,52 +1,36 @@
 package com.empresa.gestionproveedores.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
- * DTO para envolver las respuestas de la API REST
- * @param <T> Tipo de dato contenido en la respuesta
+ * DTO genérico para respuestas de la API
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponseDTO<T> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ApiResponseDTO<T> {
 
     private boolean success;
     private String message;
     private T data;
     private String error;
 
-    /**
-     * Constructor para respuestas exitosas con datos
-     */
-    public ApiResponseDTO(T data, String message) {
-        this.success = true;
-        this.message = message;
-        this.data = data;
+    public static <T> ApiResponseDTO<T> success(T data, String message) {
+        ApiResponseDTO<T> response = new ApiResponseDTO<>();
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setData(data);
+        return response;
     }
 
-    /**
-     * Constructor para respuestas exitosas sin datos
-     */
-    public ApiResponseDTO(String message) {
-        this.success = true;
-        this.message = message;
-    }
-
-    /**
-     * Constructor para respuestas de error
-     */
     public static <T> ApiResponseDTO<T> error(String error) {
         ApiResponseDTO<T> response = new ApiResponseDTO<>();
         response.setSuccess(false);
         response.setError(error);
-        response.setMessage("Error en la operación");
         return response;
     }
 }
