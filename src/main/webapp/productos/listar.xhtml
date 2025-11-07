@@ -6,7 +6,6 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/templates/layout.xhtml">
-
     <ui:define name="title">Gestión de Productos</ui:define>
     <ui:define name="pageTitle">Productos</ui:define>
 
@@ -18,18 +17,15 @@
                 padding-right: 10px;
             }
             .dialog-content-scroll::-webkit-scrollbar { width: 8px; }
-            .dialog-content-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-            .dialog-content-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+            .dialog-content-scroll::-webkit-scrollbar-track { background:#f1f1f1; border-radius:10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb { background:#888; border-radius:10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background:#555; }
         </style>
     </ui:define>
 
     <ui:define name="content">
-
         <p:panel header="Lista de Productos" styleClass="dashboard-panel">
-
             <h:form id="formProductos">
-
                 <p:growl id="growl" showDetail="true" life="4000"/>
 
                 <p:toolbar styleClass="mb-3">
@@ -70,7 +66,6 @@
                     </p:toolbarGroup>
                 </p:toolbar>
 
-                <!-- Tabla sencilla (como al principio) -->
                 <p:dataTable id="tablaProductos"
                              value="#{productoBean.productos}"
                              var="producto"
@@ -79,26 +74,32 @@
                              emptyMessage="No se encontraron productos"
                              responsive="true"
                              reflow="true">
-
                     <p:column headerText="ID" style="width:70px">
                         <h:outputText value="#{producto.id}"/>
                     </p:column>
-                    <p:column headerText="Código">
-                        <h:outputText value="#{producto.codigo}"/>
+                    <p:column headerText="Código" sortBy="#{producto.codigo}">
+                        <h:outputText value="#{producto.codigo}" style="font-weight:600"/>
                     </p:column>
-                    <p:column headerText="Nombre">
+                    <p:column headerText="Nombre" sortBy="#{producto.nombre}">
                         <h:outputText value="#{producto.nombre}"/>
                     </p:column>
-                    <p:column headerText="Precio" style="width:120px; text-align:right">
+                    <p:column headerText="Descripción">
+                        <h:outputText value="#{producto.descripcion}"
+                                      style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:250px"/>
+                    </p:column>
+                    <p:column headerText="Proveedor" sortBy="#{producto.proveedorRazonSocial}">
+                        <h:outputText value="#{producto.proveedorRazonSocial}"/>
+                    </p:column>
+                    <p:column headerText="Precio" style="width:120px;text-align:right">
                         <h:outputText value="#{producto.precio}">
                             <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Activo" style="width:110px; text-align:center">
+                    <p:column headerText="Activo" style="width:110px;text-align:center">
                         <p:tag value="#{producto.activo ? 'ACTIVO' : 'INACTIVO'}"
                                severity="#{producto.activo ? 'success' : 'danger'}"/>
                     </p:column>
-                    <p:column headerText="Acciones" style="width:220px;text-align:center">
+                    <p:column headerText="Acciones" style="width:160px;text-align:center">
                         <p:commandButton icon="pi pi-pencil"
                                          title="Editar"
                                          styleClass="ui-button-warning p-button-sm"
@@ -114,19 +115,8 @@
                                          process="@this"
                                          style="margin-left:5px">
                             <p:confirm header="Confirmación"
-                                       message="¿Está seguro de cambiar el estado?"
+                                       message="¿Cambiar estado?"
                                        icon="pi pi-question-circle"/>
-                        </p:commandButton>
-                        <p:commandButton icon="pi pi-trash"
-                                         title="Eliminar"
-                                         styleClass="ui-button-danger p-button-sm"
-                                         action="#{productoBean.eliminar(producto)}"
-                                         update="tablaProductos growl"
-                                         process="@this"
-                                         style="margin-left:5px">
-                            <p:confirm header="Confirmación"
-                                       message="¿Está seguro de eliminar este producto?"
-                                       icon="pi pi-exclamation-triangle"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
@@ -137,11 +127,9 @@
                     <p:commandButton value="No" type="button"
                                      styleClass="ui-confirmdialog-no ui-button-secondary"/>
                 </p:confirmDialog>
-
             </h:form>
         </p:panel>
 
-        <!-- Diálogo inline -->
         <h:form id="formDialogProducto">
             <p:dialog id="dialogProducto"
                       header="#{productoBean.tituloDialogo}"
@@ -149,14 +137,9 @@
                       modal="true"
                       responsive="true"
                       width="700"
-                      minHeight="200"
-                      closeOnEscape="true"
-                      resizable="false">
-
-                <p:messages id="dialogMessages" closable="true">
-                    <p:autoUpdate/>
-                </p:messages>
-
+                      resizable="false"
+                      closeOnEscape="true">
+                <p:messages id="dialogMessages" closable="true"><p:autoUpdate/></p:messages>
                 <div class="dialog-content-scroll">
                     <p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
                         <p:outputLabel for="codigo" value="Código:" style="font-weight:bold"/>
@@ -204,7 +187,7 @@
                         <p:selectOneMenu id="proveedor"
                                          value="#{productoBean.productoSeleccionado.proveedorId}"
                                          required="true"
-                                         requiredMessage="Debe seleccionar un proveedor">
+                                         requiredMessage="Seleccione un proveedor">
                             <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"/>
                             <f:selectItems value="#{productoBean.proveedoresDisponibles}"
                                            var="prov"
@@ -217,9 +200,8 @@
                                                  value="#{productoBean.productoSeleccionado.activo}"/>
                     </p:panelGrid>
                 </div>
-
                 <f:facet name="footer">
-                    <div class="flex flex-wrap gap-2 justify-content-end">
+                    <div class="flex gap-2 justify-content-end">
                         <p:commandButton value="Guardar"
                                          icon="pi pi-save"
                                          styleClass="ui-button-success"
@@ -233,10 +215,8 @@
                                          type="button"/>
                     </div>
                 </f:facet>
-
             </p:dialog>
         </h:form>
-
     </ui:define>
 </ui:composition>
 </html>

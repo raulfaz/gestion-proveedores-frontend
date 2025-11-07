@@ -29,6 +29,7 @@ import java.util.List;
 public class OrdenCompraBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private static final BigDecimal IVA_PORCENTAJE = new BigDecimal("0.12");
     private static final DateTimeFormatter DF_DDMMYYYY = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -45,46 +46,41 @@ public class OrdenCompraBean implements Serializable {
     @Getter @Setter
     private List<ProveedorDTO> proveedoresDisponibles;
 
-    // Lista completa de productos (activos) - opcional si se usa para algún otro filtro
+    // Lista dinámica de productos según proveedor
     @Getter @Setter
     private List<ProductoDTO> productosDisponibles;
 
-    // Lista filtrada según proveedor seleccionado
-    @Getter @Setter
-    private List<ProductoDTO> productosFiltrados;
-
-    // Filtros búsqueda
+    // Filtros
     @Getter @Setter
     private String estadoFiltro;
+
     @Getter @Setter
     private LocalDate fechaInicio;
+
     @Getter @Setter
     private LocalDate fechaFin;
 
-    // Campos para agregar detalle
+    // Campos para agregar detalle (solo cantidad y producto)
     @Getter @Setter
     private Long detalleProductoId;
+
     @Getter @Setter
     private Integer detalleCantidad;
-    @Getter @Setter
-    private BigDecimal detallePrecioUnitario;
 
     @PostConstruct
     public void init() {
         try {
             cargarOrdenes();
             proveedoresDisponibles = proveedorService.listarActivos();
-            productosDisponibles = productoService.listarActivos();
-            productosFiltrados = new ArrayList<>();
+            productosDisponibles = new ArrayList<>(); // Vacía hasta elegir proveedor
             if (ordenSeleccionada == null) {
-                ordenSeleccionada = nuevaOrdenPorDefecto(false);
+                ordenSeleccionada = nuevaOrdenPorDefecto(true);
             }
         } catch (Exception e) {
             log.error("Error al inicializar OrdenCompraBean", e);
             ordenes = new ArrayList<>();
             proveedoresDisponibles = new ArrayList<>();
             productosDisponibles = new ArrayList<>();
-            productosFiltrados = new ArrayList<>();
             mostrarMensajeError("Error al cargar datos iniciales");
         }
     }
@@ -101,7 +97,7 @@ public class OrdenCompraBean implements Serializable {
             try {
                 o.setNumeroOrden(ordenCompraService.generarNumeroOrden());
             } catch (ServiceException ex) {
-                log.warn("No se pudo generar número de orden automáticamente", ex);
+                log.warn("No se pudo generar número automático", ex);
             }
         }
         return o;
@@ -109,8 +105,9 @@ public class OrdenCompraBean implements Serializable {
 
     public void prepararNuevo() {
         ordenSeleccionada = nuevaOrdenPorDefecto(true);
-        productosFiltrados = new ArrayList<>();
-        limpiarCamposDetalle();
+        productosDisponibles = new ArrayList<>();
+        detalleProductoId = null;
+        detalleCantidad = null;
     }
 
     public void prepararEditar(OrdenCompraDTO o) {
@@ -123,14 +120,13 @@ public class OrdenCompraBean implements Serializable {
         if (ordenSeleccionada.getDetalles() == null) {
             ordenSeleccionada.setDetalles(new ArrayList<>());
         }
-        // Cargar productos filtrados en base al proveedor de la orden editada
+        // Cargar productos del proveedor actual (si tiene proveedor asignado)
         if (ordenSeleccionada.getProveedorId() != null) {
-            cargarProductosPorProveedor(ordenSeleccionada.getProveedorId());
+            productosDisponibles = productoService.buscarPorProveedor(ordenSeleccionada.getProveedorId());
         } else {
-            productosFiltrados = new ArrayList<>();
+            productosDisponibles = new ArrayList<>();
         }
         recalcularTotales();
-        limpiarCamposDetalle();
     }
 
     public void guardar() {
@@ -206,93 +202,73 @@ public class OrdenCompraBean implements Serializable {
         }
     }
 
-    // -------- Filtrado dinámico de productos por proveedor --------
+    // ----------------- Dinámica de productos según proveedor -----------------
     public void onProveedorChange() {
-        if (ordenSeleccionada.getProveedorId() != null) {
-            cargarProductosPorProveedor(ordenSeleccionada.getProveedorId());
-        } else {
-            productosFiltrados = new ArrayList<>();
-        }
-        limpiarCamposDetalle();
-    }
-
-    private void cargarProductosPorProveedor(Long proveedorId) {
-        try {
-            productosFiltrados = productoService.buscarPorProveedor(proveedorId);
-            if (productosFiltrados == null) {
-                productosFiltrados = new ArrayList<>();
-            }
-        } catch (ServiceException e) {
-            log.error("Error al cargar productos del proveedor {}", proveedorId, e);
-            productosFiltrados = new ArrayList<>();
-            mostrarMensajeError("No se pudieron cargar productos del proveedor");
-        }
-    }
-
-    // -------- Detalles --------
-    public void onProductoDetalleChange() {
-        if (detalleProductoId != null &&
-                (detallePrecioUnitario == null || detallePrecioUnitario.compareTo(BigDecimal.ZERO) == 0)) {
-            ProductoDTO prod = productosFiltrados.stream()
-                    .filter(p -> p.getId().equals(detalleProductoId))
-                    .findFirst()
-                    .orElse(null);
-            if (prod != null && prod.getPrecio() != null) {
-                detallePrecioUnitario = prod.getPrecio();
-            }
-        }
-    }
-
-    public void agregarDetalle() {
         if (ordenSeleccionada.getProveedorId() == null) {
-            mostrarMensajeAdvertencia("Seleccione un proveedor antes de agregar detalles");
+            productosDisponibles = new ArrayList<>();
+            ordenSeleccionada.getDetalles().clear();
+            detalleProductoId = null;
+            detalleCantidad = null;
+            recalcularTotales();
             return;
         }
+        try {
+            productosDisponibles = productoService.buscarPorProveedor(ordenSeleccionada.getProveedorId());
+            detalleProductoId = null;
+            detalleCantidad = null;
+        } catch (ServiceException e) {
+            log.error("Error al cargar productos del proveedor", e);
+            productosDisponibles = new ArrayList<>();
+            mostrarMensajeError("Error al cargar productos del proveedor");
+        }
+    }
+
+    // ----------------- Detalles -----------------
+    public void agregarDetalle() {
         if (detalleProductoId == null) {
             mostrarMensajeAdvertencia("Seleccione un producto"); return;
         }
         if (detalleCantidad == null || detalleCantidad < 1) {
             mostrarMensajeAdvertencia("La cantidad debe ser mayor a 0"); return;
         }
-        if (detallePrecioUnitario == null || detallePrecioUnitario.compareTo(BigDecimal.valueOf(0.01)) < 0) {
-            mostrarMensajeAdvertencia("El precio unitario debe ser mayor a 0"); return;
+
+        ProductoDTO prod = productosDisponibles.stream()
+                .filter(p -> p.getId().equals(detalleProductoId))
+                .findFirst()
+                .orElse(null);
+
+        if (prod == null) {
+            mostrarMensajeAdvertencia("Producto no encontrado");
+            return;
         }
 
-        ProductoDTO prod = productosFiltrados.stream()
-                .filter(p -> p.getId().equals(detalleProductoId))
-                .findFirst().orElse(null);
+        BigDecimal precioUnitario = prod.getPrecio() != null ? prod.getPrecio() : BigDecimal.ZERO;
 
         DetalleOrdenDTO det = new DetalleOrdenDTO();
         det.setProductoId(detalleProductoId);
         det.setCantidad(detalleCantidad);
-        det.setPrecioUnitario(detallePrecioUnitario);
-        det.setSubtotal(detallePrecioUnitario.multiply(new BigDecimal(detalleCantidad)));
+        det.setPrecioUnitario(precioUnitario);
+        det.setSubtotal(precioUnitario.multiply(new BigDecimal(detalleCantidad)));
 
-        if (prod != null) {
-            det.setProducto(ProductoResponseDTO.builder()
-                    .id(prod.getId())
-                    .codigo(prod.getCodigo())
-                    .nombre(prod.getNombre())
-                    .unidadMedida(prod.getUnidadMedida())
-                    .precio(prod.getPrecio())
-                    .activo(prod.getActivo())
-                    .build());
-        }
+        det.setProducto(ProductoResponseDTO.builder()
+                .id(prod.getId())
+                .codigo(prod.getCodigo())
+                .nombre(prod.getNombre())
+                .unidadMedida(prod.getUnidadMedida())
+                .precio(prod.getPrecio())
+                .activo(prod.getActivo())
+                .build());
 
         ordenSeleccionada.getDetalles().add(det);
-        limpiarCamposDetalle();
+
+        detalleProductoId = null;
+        detalleCantidad = null;
         recalcularTotales();
     }
 
     public void eliminarDetalle(DetalleOrdenDTO det) {
         ordenSeleccionada.getDetalles().remove(det);
         recalcularTotales();
-    }
-
-    private void limpiarCamposDetalle() {
-        detalleProductoId = null;
-        detalleCantidad = null;
-        detallePrecioUnitario = null;
     }
 
     private void recalcularTotales() {
@@ -313,7 +289,7 @@ public class OrdenCompraBean implements Serializable {
             mostrarMensajeAdvertencia("Seleccione un proveedor"); return false;
         }
         if (ordenSeleccionada.getFechaOrden() == null) {
-            mostrarMensajeAdvertencia("Seleccione la fecha"); return false;
+            mostrarMensajeAdvertencia("Seleccione la fecha de la orden"); return false;
         }
         if (ordenSeleccionada.getDetalles() == null || ordenSeleccionada.getDetalles().isEmpty()) {
             mostrarMensajeAdvertencia("Agregue al menos un detalle"); return false;
@@ -326,12 +302,11 @@ public class OrdenCompraBean implements Serializable {
                 ? "Editar Orden de Compra" : "Nueva Orden de Compra";
     }
 
-    // Helper formatear fecha en tabla
     public String formatFecha(LocalDate fecha) {
         return fecha != null ? fecha.format(DF_DDMMYYYY) : "";
     }
 
-    // ---------------- Mensajes ----------------
+    // Mensajes
     private void mostrarMensajeExito(String mensaje) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", mensaje));

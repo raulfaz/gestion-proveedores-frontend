@@ -6,7 +6,6 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/templates/layout.xhtml">
-
     <ui:define name="title">Gestión de Proveedores</ui:define>
     <ui:define name="pageTitle">Proveedores</ui:define>
 
@@ -18,18 +17,15 @@
                 padding-right: 10px;
             }
             .dialog-content-scroll::-webkit-scrollbar { width: 8px; }
-            .dialog-content-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-            .dialog-content-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+            .dialog-content-scroll::-webkit-scrollbar-track { background:#f1f1f1; border-radius:10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb { background:#888; border-radius:10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background:#555; }
         </style>
     </ui:define>
 
     <ui:define name="content">
-
         <p:panel header="Lista de Proveedores" styleClass="dashboard-panel">
-
             <h:form id="formProveedores">
-
                 <p:growl id="growl" showDetail="true" life="4000"/>
 
                 <p:toolbar styleClass="mb-3">
@@ -75,24 +71,17 @@
                              var="proveedor"
                              paginator="true"
                              rows="10"
-                             rowsPerPageTemplate="5,10,15,20"
-                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             currentPageReportTemplate="Mostrando {startRecord} - {endRecord} de {totalRecords} proveedores"
                              emptyMessage="No se encontraron proveedores"
                              responsive="true"
                              reflow="true">
-
-                    <p:column headerText="ID" sortBy="#{proveedor.id}" style="width:70px">
+                    <p:column headerText="ID" style="width:70px">
                         <h:outputText value="#{proveedor.id}"/>
                     </p:column>
-                    <p:column headerText="RUC" sortBy="#{proveedor.ruc}" filterBy="#{proveedor.ruc}" filterMatchMode="contains">
+                    <p:column headerText="RUC" sortBy="#{proveedor.ruc}">
                         <h:outputText value="#{proveedor.ruc}"/>
                     </p:column>
-                    <p:column headerText="Razón Social" sortBy="#{proveedor.razonSocial}" filterBy="#{proveedor.razonSocial}" filterMatchMode="contains">
+                    <p:column headerText="Razón Social" sortBy="#{proveedor.razonSocial}">
                         <h:outputText value="#{proveedor.razonSocial}" style="font-weight:600"/>
-                    </p:column>
-                    <p:column headerText="Nombre Comercial">
-                        <h:outputText value="#{proveedor.nombreComercial}"/>
                     </p:column>
                     <p:column headerText="Email">
                         <h:outputText value="#{proveedor.email}"/>
@@ -100,11 +89,11 @@
                     <p:column headerText="Teléfono">
                         <h:outputText value="#{proveedor.telefono}"/>
                     </p:column>
-                    <p:column headerText="Estado" sortBy="#{proveedor.activo}" style="width:120px;text-align:center">
+                    <p:column headerText="Estado" style="width:120px;text-align:center">
                         <p:tag value="#{proveedor.activo ? 'ACTIVO' : 'INACTIVO'}"
                                severity="#{proveedor.activo ? 'success' : 'danger'}"/>
                     </p:column>
-                    <p:column headerText="Acciones" style="width:220px;text-align:center">
+                    <p:column headerText="Acciones" style="width:160px;text-align:center">
                         <p:commandButton icon="pi pi-pencil"
                                          title="Editar"
                                          styleClass="ui-button-warning p-button-sm"
@@ -120,19 +109,8 @@
                                          process="@this"
                                          style="margin-left:5px">
                             <p:confirm header="Confirmación"
-                                       message="¿Está seguro de cambiar el estado?"
+                                       message="¿Cambiar estado?"
                                        icon="pi pi-question-circle"/>
-                        </p:commandButton>
-                        <p:commandButton icon="pi pi-trash"
-                                         title="Eliminar"
-                                         styleClass="ui-button-danger p-button-sm"
-                                         action="#{proveedorBean.eliminar(proveedor)}"
-                                         update="tablaProveedores growl"
-                                         process="@this"
-                                         style="margin-left:5px">
-                            <p:confirm header="Confirmación"
-                                       message="¿Está seguro de eliminar este proveedor?"
-                                       icon="pi pi-exclamation-triangle"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
@@ -143,7 +121,6 @@
                     <p:commandButton value="No" type="button"
                                      styleClass="ui-confirmdialog-no ui-button-secondary"/>
                 </p:confirmDialog>
-
             </h:form>
         </p:panel>
 
@@ -154,14 +131,9 @@
                       modal="true"
                       responsive="true"
                       width="700"
-                      minHeight="200"
-                      closeOnEscape="true"
-                      resizable="false">
-
-                <p:messages id="dialogMessages" closable="true">
-                    <p:autoUpdate/>
-                </p:messages>
-
+                      resizable="false"
+                      closeOnEscape="true">
+                <p:messages id="dialogMessages" closable="true"><p:autoUpdate/></p:messages>
                 <div class="dialog-content-scroll">
                     <div class="formgrid grid">
                         <div class="field col-12 md:col-6">
@@ -187,7 +159,7 @@
                             <p:inputText id="nombreComercial"
                                          value="#{proveedorBean.proveedorSeleccionado.nombreComercial}"
                                          maxlength="200"
-                                         placeholder="Ingrese el nombre comercial"/>
+                                         placeholder="Nombre comercial"/>
                         </div>
                         <div class="field col-12 md:col-6">
                             <p:outputLabel for="telefono" value="Teléfono"/>
@@ -202,15 +174,16 @@
                                          value="#{proveedorBean.proveedorSeleccionado.email}"
                                          maxlength="100"
                                          placeholder="ejemplo@correo.com">
-                                <f:validateRegex pattern="^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$"/>
+                                <f:validateRegex pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+                                                 for="email"/>
                             </p:inputText>
                         </div>
                         <div class="field col-12 md:col-6">
-                            <p:outputLabel for="contacto" value="Persona de Contacto"/>
+                            <p:outputLabel for="contacto" value="Contacto"/>
                             <p:inputText id="contacto"
                                          value="#{proveedorBean.proveedorSeleccionado.contacto}"
                                          maxlength="200"
-                                         placeholder="Nombre del contacto"/>
+                                         placeholder="Persona de contacto"/>
                         </div>
                         <div class="field col-12">
                             <p:outputLabel for="direccion" value="Dirección"/>
@@ -218,18 +191,17 @@
                                              value="#{proveedorBean.proveedorSeleccionado.direccion}"
                                              rows="2"
                                              maxlength="500"
-                                             placeholder="Ingrese la dirección"/>
+                                             placeholder="Dirección"/>
                         </div>
                         <div class="field col-12">
                             <p:selectBooleanCheckbox id="activo"
                                                      value="#{proveedorBean.proveedorSeleccionado.activo}"
-                                                     itemLabel="Proveedor Activo"/>
+                                                     itemLabel="Activo"/>
                         </div>
                     </div>
                 </div>
-
                 <f:facet name="footer">
-                    <div class="flex flex-wrap gap-2 justify-content-end">
+                    <div class="flex gap-2 justify-content-end">
                         <p:commandButton value="Guardar"
                                          icon="pi pi-save"
                                          styleClass="ui-button-success"
@@ -243,10 +215,8 @@
                                          type="button"/>
                     </div>
                 </f:facet>
-
             </p:dialog>
         </h:form>
-
     </ui:define>
 </ui:composition>
 </html>
