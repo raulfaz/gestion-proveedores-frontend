@@ -66,13 +66,40 @@
             </h:form>
 
             <div class="sidebar-footer">
-                <p><i class="pi pi-user"></i> Usuario: Admin</p>
-                <p><i class="pi pi-calendar"></i>
+                <p>
+                    <i class="pi pi-user"></i>
+                    <h:outputText value="#{authBean.nombreUsuario}"/>
+                </p>
+                <p>
+                    <i class="pi pi-shield"></i>
+                    <h:outputText value="#{authBean.usuarioActual.rol}"/>
+                </p>
+                <p>
+                    <i class="pi pi-calendar"></i>
                     <h:outputText value="#{java.time.LocalDate.now()}">
                         <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
                     </h:outputText>
                 </p>
                 <p class="version">v1.0.0</p>
+            </div>
+
+            <!-- En el topbar, actualiza los botones: -->
+            <div class="topbar-right">
+                <h:form>
+                    <p:commandButton icon="pi pi-bell"
+                                     styleClass="p-button-rounded p-button-text"
+                                     title="Notificaciones"/>
+
+                    <p:commandButton icon="pi pi-user"
+                                     styleClass="p-button-rounded p-button-text"
+                                     title="#{authBean.nombreUsuario}"/>
+
+                    <p:commandButton value="Cerrar Sesión"
+                                     icon="pi pi-sign-out"
+                                     styleClass="ui-button-danger"
+                                     action="#{authBean.logout()}"
+                                     title="Cerrar Sesión"/>
+                </h:form>
             </div>
 
         </aside>

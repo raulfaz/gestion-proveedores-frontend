@@ -74,9 +74,9 @@
                         <p:commandButton value="Nuevo Proveedor"
                                          icon="pi pi-plus"
                                          styleClass="ui-button-success"
-                                         onclick="PF('dlgProveedor').show();"
                                          action="#{proveedorBean.prepararNuevo()}"
                                          update=":formDialog"
+                                         oncomplete="PF('dlgProveedor').show();"
                                          process="@this"/>
 
                         <p:commandButton value="Refrescar"
@@ -143,9 +143,7 @@
                     </p:column>
 
                     <p:column headerText="Teléfono" style="width: 120px;">
-                        <h:outputText value="#{proveedor.telefono}">
-                            <f:convertNumber pattern="###-###-####" type="number"/>
-                        </h:outputText>
+                        <h:outputText value="#{proveedor.telefono}"/>
                     </p:column>
 
                     <p:column headerText="Email">
@@ -165,9 +163,9 @@
                         <p:commandButton icon="pi pi-pencil"
                                          title="Editar"
                                          styleClass="ui-button-warning p-button-sm"
-                                         onclick="PF('dlgProveedor').show();"
                                          action="#{proveedorBean.prepararEdicion(proveedor)}"
                                          update=":formDialog"
+                                         oncomplete="PF('dlgProveedor').show();"
                                          process="@this">
                             <p:resetInput target=":formDialog"/>
                         </p:commandButton>
@@ -216,7 +214,10 @@
                       modal="true"
                       width="700"
                       responsive="true"
-                      closeOnEscape="true">
+                      closeOnEscape="true"
+                      appendTo="@(body)">
+
+                <p:messages id="dialogMessages" closable="true"/>
 
                 <p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
 
@@ -260,7 +261,7 @@
                                  value="#{proveedorBean.nuevoProveedor.email}"
                                  maxlength="100"
                                  placeholder="ejemplo@correo.com">
-                        <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"/>
+                        <f:validateRegex pattern="^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$"/>
                     </p:inputText>
 
                     <p:outputLabel for="contacto" value="Persona de Contacto:"/>
@@ -271,9 +272,7 @@
 
                     <p:outputLabel for="activo" value="Estado:"/>
                     <p:selectBooleanCheckbox id="activo"
-                                             value="#{proveedorBean.nuevoProveedor.activo}">
-                        <p:ajax update="@this"/>
-                    </p:selectBooleanCheckbox>
+                                             value="#{proveedorBean.nuevoProveedor.activo}"/>
 
                 </p:panelGrid>
 
@@ -282,8 +281,9 @@
                                      icon="pi pi-save"
                                      styleClass="ui-button-success"
                                      action="#{proveedorBean.guardar()}"
-                                     update=":formProveedores:tablaProveedores"
-                                     oncomplete="if (!args.validationFailed) PF('dlgProveedor').hide();"/>
+                                     update=":formProveedores:tablaProveedores dialogMessages"
+                                     oncomplete="if (!args.validationFailed) PF('dlgProveedor').hide();"
+                                     process="@form"/>
 
                     <p:commandButton value="Cancelar"
                                      icon="pi pi-times"
