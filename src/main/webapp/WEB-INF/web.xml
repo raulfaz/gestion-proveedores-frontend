@@ -12,11 +12,6 @@
         <welcome-file>login.xhtml</welcome-file>
     </welcome-file-list>
 
-    <!-- ========================================
-         CONFIGURACIÓN JSF
-         ======================================== -->
-
-    <!-- Estado del Proyecto: Development para debugging -->
     <context-param>
         <param-name>jakarta.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
@@ -40,15 +35,6 @@
         <param-value>true</param-value>
     </context-param>
 
-    <!-- ========================================
-         CONFIGURACIÓN PRIMEFACES
-         ======================================== -->
-
-    <!-- Tema de PrimeFaces -->
-    <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>saga</param-value>
-    </context-param>
 
     <!-- Mover scripts al final del documento -->
     <context-param>
