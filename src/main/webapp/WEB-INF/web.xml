@@ -28,12 +28,6 @@
         <param-value>true</param-value>
     </context-param>
 
-    <!--Tema-->
-    <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>arya</param-value>
-    </context-param>
-
     <!-- Validación de beans habilitada -->
     <context-param>
         <param-name>jakarta.faces.VALIDATE_EMPTY_FIELDS</param-name>
@@ -86,6 +80,12 @@
         <param-value>auto</param-value>
     </context-param>
 
+    <!-- IMPORTANTE: Habilitar Dialog Framework -->
+    <context-param>
+        <param-name>primefaces.DIALOG_FRAMEWORK</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <!-- ========================================
          CONFIGURACIÓN DE SEGURIDAD
          ======================================== -->
@@ -110,94 +110,5 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-
-    <!-- ========================================
-         CONFIGURACIÓN DE SESIÓN
-         ======================================== -->
-
-    <session-config>
-        <session-timeout>30</session-timeout>
-        <cookie-config>
-            <http-only>true</http-only>
-            <secure>false</secure>
-        </cookie-config>
-        <tracking-mode>COOKIE</tracking-mode>
-    </session-config>
-
-    <!-- ========================================
-         MANEJO DE ERRORES
-         ======================================== -->
-
-    <!-- Error 404 - Página no encontrada -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/login.xhtml</location>
-    </error-page>
-
-    <!-- Error 403 - Acceso denegado -->
-    <error-page>
-        <error-code>403</error-code>
-        <location>/login.xhtml</location>
-    </error-page>
-
-    <!-- Error 500 - Error del servidor -->
-    <error-page>
-        <error-code>500</error-code>
-        <location>/login.xhtml</location>
-    </error-page>
-
-    <!-- Excepción de vista expirada -->
-    <error-page>
-        <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
-        <location>/login.xhtml</location>
-    </error-page>
-
-    <!-- ========================================
-         CONFIGURACIÓN MIME TYPES
-         ======================================== -->
-
-    <mime-mapping>
-        <extension>xhtml</extension>
-        <mime-type>application/xhtml+xml</mime-type>
-    </mime-mapping>
-
-    <mime-mapping>
-        <extension>woff</extension>
-        <mime-type>font/woff</mime-type>
-    </mime-mapping>
-
-    <mime-mapping>
-        <extension>woff2</extension>
-        <mime-type>font/woff2</mime-type>
-    </mime-mapping>
-
-    <mime-mapping>
-        <extension>ttf</extension>
-        <mime-type>font/ttf</mime-type>
-    </mime-mapping>
-
-    <mime-mapping>
-        <extension>eot</extension>
-        <mime-type>application/vnd.ms-fontobject</mime-type>
-    </mime-mapping>
-
-    <!-- ========================================
-         LISTENERS
-         ======================================== -->
-
-    <!-- Listener de Weld (CDI) -->
-    <listener>
-        <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
-    </listener>
-
-    <!-- ========================================
-         CONFIGURACIÓN DE RECURSOS
-         ======================================== -->
-
-    <!-- Resource servlet para archivos estáticos -->
-    <context-param>
-        <param-name>jakarta.faces.WEBAPP_RESOURCES_DIRECTORY</param-name>
-        <param-value>/resources</param-value>
-    </context-param>
 
 </web-app>

@@ -7,71 +7,31 @@
 
 <ui:composition template="/templates/layout.xhtml">
 
-    <f:metadata>
-        <f:viewAction action="#{proveedorBean.init}"/>
-    </f:metadata>
-
     <ui:define name="title">Gestión de Proveedores</ui:define>
-    <ui:define name="pageTitle">Gestión de Proveedores</ui:define>
+    <ui:define name="pageTitle">Proveedores</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .dialog-content-scroll {
+                max-height: 450px;
+                overflow-y: auto;
+                padding-right: 10px;
+            }
+            .dialog-content-scroll::-webkit-scrollbar { width: 8px; }
+            .dialog-content-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+        </style>
+    </ui:define>
 
     <ui:define name="content">
 
-        <!-- Panel de Estadísticas Rápidas -->
-        <h:panelGroup layout="block" styleClass="dashboard-stats mb-3">
-
-            <div class="stat-card stat-card-primary">
-                <div class="stat-card-icon">
-                    <i class="pi pi-users"></i>
-                </div>
-                <div class="stat-card-content">
-                    <h:outputText value="#{proveedorBean.totalProveedores}"
-                                  styleClass="stat-card-number"/>
-                    <p class="stat-card-label">Total Proveedores</p>
-                </div>
-            </div>
-
-            <div class="stat-card stat-card-success">
-                <div class="stat-card-icon">
-                    <i class="pi pi-check-circle"></i>
-                </div>
-                <div class="stat-card-content">
-                    <h:outputText value="#{proveedorBean.totalProveedoresActivos}"
-                                  styleClass="stat-card-number"/>
-                    <p class="stat-card-label">Proveedores Activos</p>
-                </div>
-            </div>
-
-            <div class="stat-card stat-card-info">
-                <div class="stat-card-icon">
-                    <i class="pi pi-shopping-bag"></i>
-                </div>
-                <div class="stat-card-content">
-                    <h:outputText value="0" styleClass="stat-card-number"/>
-                    <p class="stat-card-label">Productos Totales</p>
-                </div>
-            </div>
-
-            <div class="stat-card stat-card-warning">
-                <div class="stat-card-icon">
-                    <i class="pi pi-clock"></i>
-                </div>
-                <div class="stat-card-content">
-                    <h:outputText value="0" styleClass="stat-card-number"/>
-                    <p class="stat-card-label">Órdenes Pendientes</p>
-                </div>
-            </div>
-
-        </h:panelGroup>
-
-        <!-- Panel Principal -->
         <p:panel header="Lista de Proveedores" styleClass="dashboard-panel">
 
             <h:form id="formProveedores">
 
-                <!-- Growl para mensajes globales -->
                 <p:growl id="growl" showDetail="true" life="4000"/>
 
-                <!-- Toolbar -->
                 <p:toolbar styleClass="mb-3">
                     <p:toolbarGroup>
                         <p:commandButton value="Nuevo Proveedor"
@@ -81,88 +41,70 @@
                                          update=":formDialog"
                                          oncomplete="PF('dlgProveedor').show();"
                                          process="@this"/>
-
                         <p:commandButton value="Refrescar"
                                          icon="pi pi-refresh"
                                          styleClass="ui-button-info"
                                          action="#{proveedorBean.cargarProveedores()}"
-                                         update="tablaProveedores"
-                                         process="@this"/>
-
-                        <p:commandButton value="Activos"
-                                         icon="pi pi-check"
-                                         styleClass="ui-button-success"
-                                         action="#{proveedorBean.cargarProveedoresActivos()}"
-                                         update="tablaProveedores"
-                                         process="@this"/>
+                                         update="tablaProveedores growl"
+                                         process="@this"
+                                         style="margin-left:5px"/>
                     </p:toolbarGroup>
-
                     <p:toolbarGroup align="right">
-                        <p:inputText placeholder="Buscar por razón social..."
+                        <p:inputText id="busqueda"
                                      value="#{proveedorBean.criterioBusqueda}"
-                                     style="width: 250px; margin-right: 0.5rem;"/>
+                                     placeholder="Buscar por razón social..."
+                                     style="width:300px;margin-right:5px"/>
                         <p:commandButton value="Buscar"
                                          icon="pi pi-search"
                                          action="#{proveedorBean.buscar()}"
-                                         update="tablaProveedores"
-                                         styleClass="ui-button-help"/>
-                        <p:commandButton icon="pi pi-times"
-                                         title="Limpiar búsqueda"
+                                         update="tablaProveedores growl"
+                                         process="@this busqueda"
+                                         styleClass="ui-button-warning"/>
+                        <p:commandButton value="Limpiar"
+                                         icon="pi pi-times"
                                          action="#{proveedorBean.limpiarBusqueda()}"
-                                         update="tablaProveedores"
+                                         update="tablaProveedores busqueda"
+                                         process="@this"
                                          styleClass="ui-button-secondary"
-                                         process="@this"/>
+                                         style="margin-left:5px"/>
                     </p:toolbarGroup>
                 </p:toolbar>
 
-                <!-- Tabla de Proveedores -->
                 <p:dataTable id="tablaProveedores"
                              value="#{proveedorBean.proveedores}"
                              var="proveedor"
                              paginator="true"
                              rows="10"
-                             rowsPerPageTemplate="10,25,50"
-                             paginatorPosition="bottom"
-                             emptyMessage="No hay proveedores registrados"
-                             styleClass="tabla-proveedores"
-                             stripedRows="true"
+                             rowsPerPageTemplate="5,10,15,20"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="Mostrando {startRecord} - {endRecord} de {totalRecords} proveedores"
+                             emptyMessage="No se encontraron proveedores"
+                             responsive="true"
                              reflow="true">
 
-                    <p:column headerText="ID" style="width: 80px; text-align: center;">
+                    <p:column headerText="ID" sortBy="#{proveedor.id}" style="width:70px">
                         <h:outputText value="#{proveedor.id}"/>
                     </p:column>
-
-                    <p:column headerText="RUC" style="width: 120px;">
+                    <p:column headerText="RUC" sortBy="#{proveedor.ruc}" filterBy="#{proveedor.ruc}" filterMatchMode="contains">
                         <h:outputText value="#{proveedor.ruc}"/>
                     </p:column>
-
-                    <p:column headerText="Razón Social" sortBy="#{proveedor.razonSocial}">
-                        <h:outputText value="#{proveedor.razonSocial}"
-                                      style="font-weight: 600;"/>
+                    <p:column headerText="Razón Social" sortBy="#{proveedor.razonSocial}" filterBy="#{proveedor.razonSocial}" filterMatchMode="contains">
+                        <h:outputText value="#{proveedor.razonSocial}" style="font-weight:600"/>
                     </p:column>
-
                     <p:column headerText="Nombre Comercial">
                         <h:outputText value="#{proveedor.nombreComercial}"/>
                     </p:column>
-
-                    <p:column headerText="Teléfono" style="width: 120px;">
-                        <h:outputText value="#{proveedor.telefono}"/>
-                    </p:column>
-
                     <p:column headerText="Email">
                         <h:outputText value="#{proveedor.email}"/>
                     </p:column>
-
-                    <p:column headerText="Contacto" style="width: 150px;">
-                        <h:outputText value="#{proveedor.contacto}"/>
+                    <p:column headerText="Teléfono">
+                        <h:outputText value="#{proveedor.telefono}"/>
                     </p:column>
-
-                    <p:column headerText="Estado" style="width: 100px; text-align: center;">
+                    <p:column headerText="Estado" sortBy="#{proveedor.activo}" style="width:120px;text-align:center">
                         <p:tag value="#{proveedor.activo ? 'ACTIVO' : 'INACTIVO'}"
                                severity="#{proveedor.activo ? 'success' : 'danger'}"/>
                     </p:column>
-
-                    <p:column headerText="Acciones" style="width: 180px; text-align: center;">
+                    <p:column headerText="Acciones" style="width:220px;text-align:center">
                         <p:commandButton icon="pi pi-pencil"
                                          title="Editar"
                                          styleClass="ui-button-warning p-button-sm"
@@ -170,33 +112,31 @@
                                          update=":formDialog"
                                          oncomplete="PF('dlgProveedor').show();"
                                          process="@this"/>
-
-                        <p:commandButton icon="#{proveedor.activo ? 'pi pi-ban' : 'pi pi-check'}"
+                        <p:commandButton icon="#{proveedor.activo ? 'pi pi-times' : 'pi pi-check'}"
                                          title="#{proveedor.activo ? 'Desactivar' : 'Activar'}"
                                          styleClass="#{proveedor.activo ? 'ui-button-secondary' : 'ui-button-success'} p-button-sm"
                                          action="#{proveedorBean.cambiarEstado(proveedor)}"
                                          update="tablaProveedores growl"
-                                         process="@this">
+                                         process="@this"
+                                         style="margin-left:5px">
                             <p:confirm header="Confirmación"
                                        message="¿Está seguro de cambiar el estado?"
                                        icon="pi pi-question-circle"/>
                         </p:commandButton>
-
                         <p:commandButton icon="pi pi-trash"
                                          title="Eliminar"
                                          styleClass="ui-button-danger p-button-sm"
                                          action="#{proveedorBean.eliminar(proveedor)}"
                                          update="tablaProveedores growl"
-                                         process="@this">
+                                         process="@this"
+                                         style="margin-left:5px">
                             <p:confirm header="Confirmación"
                                        message="¿Está seguro de eliminar este proveedor?"
                                        icon="pi pi-exclamation-triangle"/>
                         </p:commandButton>
                     </p:column>
-
                 </p:dataTable>
 
-                <!-- Confirm Dialog -->
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true">
                     <p:commandButton value="Sí" type="button"
                                      styleClass="ui-confirmdialog-yes ui-button-success"/>
@@ -207,9 +147,6 @@
             </h:form>
         </p:panel>
 
-        <!-- ========================================
-             DIÁLOGO RESPONSIVE DE PROVEEDOR
-             ======================================== -->
         <h:form id="formDialog">
             <p:dialog id="dialogProveedor"
                       header="#{proveedorBean.tituloDialogo}"
@@ -219,100 +156,78 @@
                       width="700"
                       minHeight="200"
                       closeOnEscape="true"
-                      resizable="false"
-                      styleClass="dialog-responsive">
+                      resizable="false">
 
                 <p:messages id="dialogMessages" closable="true">
-                    <p:autoUpdate />
+                    <p:autoUpdate/>
                 </p:messages>
 
-                <!-- GRID RESPONSIVE CON PRIMEFLEX -->
-                <div class="formgrid grid">
-
-                    <!-- Fila 1: RUC y Razón Social -->
-                    <div class="field col-12 md:col-6">
-                        <p:outputLabel for="ruc" value="RUC *" styleClass="font-bold"/>
-                        <p:inputText id="ruc"
-                                     value="#{proveedorBean.proveedorSeleccionado.ruc}"
-                                     required="true"
-                                     requiredMessage="El RUC es obligatorio"
-                                     maxlength="13"
-                                     placeholder="Ingrese el RUC (13 dígitos)"
-                                     styleClass="w-full"/>
+                <div class="dialog-content-scroll">
+                    <div class="formgrid grid">
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="ruc" value="RUC *" styleClass="font-bold"/>
+                            <p:inputText id="ruc"
+                                         value="#{proveedorBean.proveedorSeleccionado.ruc}"
+                                         required="true"
+                                         requiredMessage="El RUC es obligatorio"
+                                         maxlength="13"
+                                         placeholder="Ingrese el RUC"/>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="razonSocial" value="Razón Social *" styleClass="font-bold"/>
+                            <p:inputText id="razonSocial"
+                                         value="#{proveedorBean.proveedorSeleccionado.razonSocial}"
+                                         required="true"
+                                         requiredMessage="La razón social es obligatoria"
+                                         maxlength="200"
+                                         placeholder="Ingrese la razón social"/>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="nombreComercial" value="Nombre Comercial"/>
+                            <p:inputText id="nombreComercial"
+                                         value="#{proveedorBean.proveedorSeleccionado.nombreComercial}"
+                                         maxlength="200"
+                                         placeholder="Ingrese el nombre comercial"/>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="telefono" value="Teléfono"/>
+                            <p:inputText id="telefono"
+                                         value="#{proveedorBean.proveedorSeleccionado.telefono}"
+                                         maxlength="20"
+                                         placeholder="Ej: 0999999999"/>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="email" value="Email"/>
+                            <p:inputText id="email"
+                                         value="#{proveedorBean.proveedorSeleccionado.email}"
+                                         maxlength="100"
+                                         placeholder="ejemplo@correo.com">
+                                <f:validateRegex pattern="^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$"/>
+                            </p:inputText>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <p:outputLabel for="contacto" value="Persona de Contacto"/>
+                            <p:inputText id="contacto"
+                                         value="#{proveedorBean.proveedorSeleccionado.contacto}"
+                                         maxlength="200"
+                                         placeholder="Nombre del contacto"/>
+                        </div>
+                        <div class="field col-12">
+                            <p:outputLabel for="direccion" value="Dirección"/>
+                            <p:inputTextarea id="direccion"
+                                             value="#{proveedorBean.proveedorSeleccionado.direccion}"
+                                             rows="2"
+                                             maxlength="500"
+                                             placeholder="Ingrese la dirección"/>
+                        </div>
+                        <div class="field col-12">
+                            <p:selectBooleanCheckbox id="activo"
+                                                     value="#{proveedorBean.proveedorSeleccionado.activo}"
+                                                     itemLabel="Proveedor Activo"/>
+                        </div>
                     </div>
-
-                    <div class="field col-12 md:col-6">
-                        <p:outputLabel for="razonSocial" value="Razón Social *" styleClass="font-bold"/>
-                        <p:inputText id="razonSocial"
-                                     value="#{proveedorBean.proveedorSeleccionado.razonSocial}"
-                                     required="true"
-                                     requiredMessage="La razón social es obligatoria"
-                                     maxlength="200"
-                                     placeholder="Ingrese la razón social"
-                                     styleClass="w-full"/>
-                    </div>
-
-                    <!-- Fila 2: Nombre Comercial (full width) -->
-                    <div class="field col-12">
-                        <p:outputLabel for="nombreComercial" value="Nombre Comercial"/>
-                        <p:inputText id="nombreComercial"
-                                     value="#{proveedorBean.proveedorSeleccionado.nombreComercial}"
-                                     maxlength="200"
-                                     placeholder="Ingrese el nombre comercial"
-                                     styleClass="w-full"/>
-                    </div>
-
-                    <!-- Fila 3: Dirección (full width) -->
-                    <div class="field col-12">
-                        <p:outputLabel for="direccion" value="Dirección"/>
-                        <p:inputTextarea id="direccion"
-                                         value="#{proveedorBean.proveedorSeleccionado.direccion}"
-                                         rows="2"
-                                         maxlength="500"
-                                         placeholder="Ingrese la dirección completa"
-                                         styleClass="w-full"/>
-                    </div>
-
-                    <!-- Fila 4: Teléfono y Email -->
-                    <div class="field col-12 md:col-6">
-                        <p:outputLabel for="telefono" value="Teléfono"/>
-                        <p:inputText id="telefono"
-                                     value="#{proveedorBean.proveedorSeleccionado.telefono}"
-                                     maxlength="20"
-                                     placeholder="Ej: 0999999999"
-                                     styleClass="w-full"/>
-                    </div>
-
-                    <div class="field col-12 md:col-6">
-                        <p:outputLabel for="email" value="Email"/>
-                        <p:inputText id="email"
-                                     value="#{proveedorBean.proveedorSeleccionado.email}"
-                                     maxlength="100"
-                                     placeholder="ejemplo@correo.com"
-                                     styleClass="w-full">
-                            <f:validateRegex pattern="^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$"/>
-                        </p:inputText>
-                    </div>
-
-                    <!-- Fila 5: Contacto y Estado -->
-                    <div class="field col-12 md:col-8">
-                        <p:outputLabel for="contacto" value="Persona de Contacto"/>
-                        <p:inputText id="contacto"
-                                     value="#{proveedorBean.proveedorSeleccionado.contacto}"
-                                     maxlength="200"
-                                     placeholder="Nombre del contacto"
-                                     styleClass="w-full"/>
-                    </div>
-
-                    <div class="field col-12 md:col-4 flex align-items-center">
-                        <p:selectBooleanCheckbox id="activo"
-                                                 value="#{proveedorBean.proveedorSeleccionado.activo}"
-                                                 itemLabel="Proveedor Activo"/>
-                    </div>
-
                 </div>
 
-                <!-- Footer con botones -->
                 <f:facet name="footer">
                     <div class="flex flex-wrap gap-2 justify-content-end">
                         <p:commandButton value="Guardar"
@@ -321,7 +236,6 @@
                                          action="#{proveedorBean.guardar()}"
                                          update="dialogMessages :formProveedores:tablaProveedores :formProveedores:growl"
                                          process="@form"/>
-
                         <p:commandButton value="Cancelar"
                                          icon="pi pi-times"
                                          styleClass="ui-button-secondary"
@@ -334,6 +248,5 @@
         </h:form>
 
     </ui:define>
-
 </ui:composition>
 </html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="title">Gestión de Productos</ui:define>
+    <ui:define name="pageTitle">Productos</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .dialog-content-scroll {
+                max-height: 450px;
+                overflow-y: auto;
+                padding-right: 10px;
+            }
+            .dialog-content-scroll::-webkit-scrollbar { width: 8px; }
+            .dialog-content-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+            .dialog-content-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:panel header="Lista de Productos" styleClass="dashboard-panel">
+
+            <h:form id="formProductos">
+
+                <p:growl id="growl" showDetail="true" life="4000"/>
+
+                <p:toolbar styleClass="mb-3">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nuevo Producto"
+                                         icon="pi pi-plus"
+                                         styleClass="ui-button-success"
+                                         action="#{productoBean.prepararNuevo()}"
+                                         update=":formDialogProducto"
+                                         oncomplete="PF('dlgProducto').show();"
+                                         process="@this"/>
+                        <p:commandButton value="Refrescar"
+                                         icon="pi pi-refresh"
+                                         styleClass="ui-button-info"
+                                         action="#{productoBean.cargarProductos()}"
+                                         update="tablaProductos growl"
+                                         process="@this"
+                                         style="margin-left:5px"/>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:inputText id="busqueda"
+                                     value="#{productoBean.criterioBusqueda}"
+                                     placeholder="Buscar por nombre o código..."
+                                     style="width:300px;margin-right:5px"/>
+                        <p:commandButton value="Buscar"
+                                         icon="pi pi-search"
+                                         action="#{productoBean.buscar()}"
+                                         update="tablaProductos growl"
+                                         process="@this busqueda"
+                                         styleClass="ui-button-warning"/>
+                        <p:commandButton value="Limpiar"
+                                         icon="pi pi-times"
+                                         action="#{productoBean.limpiarBusqueda()}"
+                                         update="tablaProductos busqueda"
+                                         process="@this"
+                                         styleClass="ui-button-secondary"
+                                         style="margin-left:5px"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <!-- Tabla sencilla (como al principio) -->
+                <p:dataTable id="tablaProductos"
+                             value="#{productoBean.productos}"
+                             var="producto"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No se encontraron productos"
+                             responsive="true"
+                             reflow="true">
+
+                    <p:column headerText="ID" style="width:70px">
+                        <h:outputText value="#{producto.id}"/>
+                    </p:column>
+                    <p:column headerText="Código">
+                        <h:outputText value="#{producto.codigo}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{producto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Precio" style="width:120px; text-align:right">
+                        <h:outputText value="#{producto.precio}">
+                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Activo" style="width:110px; text-align:center">
+                        <p:tag value="#{producto.activo ? 'ACTIVO' : 'INACTIVO'}"
+                               severity="#{producto.activo ? 'success' : 'danger'}"/>
+                    </p:column>
+                    <p:column headerText="Acciones" style="width:220px;text-align:center">
+                        <p:commandButton icon="pi pi-pencil"
+                                         title="Editar"
+                                         styleClass="ui-button-warning p-button-sm"
+                                         action="#{productoBean.prepararEditar(producto)}"
+                                         update=":formDialogProducto"
+                                         oncomplete="PF('dlgProducto').show();"
+                                         process="@this"/>
+                        <p:commandButton icon="#{producto.activo ? 'pi pi-times' : 'pi pi-check'}"
+                                         title="#{producto.activo ? 'Desactivar' : 'Activar'}"
+                                         styleClass="#{producto.activo ? 'ui-button-secondary' : 'ui-button-success'} p-button-sm"
+                                         action="#{productoBean.cambiarEstado(producto)}"
+                                         update="tablaProductos growl"
+                                         process="@this"
+                                         style="margin-left:5px">
+                            <p:confirm header="Confirmación"
+                                       message="¿Está seguro de cambiar el estado?"
+                                       icon="pi pi-question-circle"/>
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-trash"
+                                         title="Eliminar"
+                                         styleClass="ui-button-danger p-button-sm"
+                                         action="#{productoBean.eliminar(producto)}"
+                                         update="tablaProductos growl"
+                                         process="@this"
+                                         style="margin-left:5px">
+                            <p:confirm header="Confirmación"
+                                       message="¿Está seguro de eliminar este producto?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                    <p:commandButton value="Sí" type="button"
+                                     styleClass="ui-confirmdialog-yes ui-button-success"/>
+                    <p:commandButton value="No" type="button"
+                                     styleClass="ui-confirmdialog-no ui-button-secondary"/>
+                </p:confirmDialog>
+
+            </h:form>
+        </p:panel>
+
+        <!-- Diálogo inline -->
+        <h:form id="formDialogProducto">
+            <p:dialog id="dialogProducto"
+                      header="#{productoBean.tituloDialogo}"
+                      widgetVar="dlgProducto"
+                      modal="true"
+                      responsive="true"
+                      width="700"
+                      minHeight="200"
+                      closeOnEscape="true"
+                      resizable="false">
+
+                <p:messages id="dialogMessages" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+
+                <div class="dialog-content-scroll">
+                    <p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+                        <p:outputLabel for="codigo" value="Código:" style="font-weight:bold"/>
+                        <p:inputText id="codigo"
+                                     value="#{productoBean.productoSeleccionado.codigo}"
+                                     required="true"
+                                     requiredMessage="El código es obligatorio"
+                                     maxlength="50"
+                                     placeholder="Ej: PROD-001"/>
+
+                        <p:outputLabel for="nombre" value="Nombre:" style="font-weight:bold"/>
+                        <p:inputText id="nombre"
+                                     value="#{productoBean.productoSeleccionado.nombre}"
+                                     required="true"
+                                     requiredMessage="El nombre es obligatorio"
+                                     maxlength="200"
+                                     placeholder="Nombre del producto"/>
+
+                        <p:outputLabel for="descripcion" value="Descripción:"/>
+                        <p:inputTextarea id="descripcion"
+                                         value="#{productoBean.productoSeleccionado.descripcion}"
+                                         rows="3"
+                                         maxlength="500"
+                                         placeholder="Descripción del producto"/>
+
+                        <p:outputLabel for="unidadMedida" value="Unidad de Medida:" style="font-weight:bold"/>
+                        <p:inputText id="unidadMedida"
+                                     value="#{productoBean.productoSeleccionado.unidadMedida}"
+                                     required="true"
+                                     requiredMessage="La unidad de medida es obligatoria"
+                                     maxlength="20"
+                                     placeholder="Ej: UNIDAD, CAJA, KG, LITRO"/>
+
+                        <p:outputLabel for="precio" value="Precio:" style="font-weight:bold"/>
+                        <p:inputNumber id="precio"
+                                       value="#{productoBean.productoSeleccionado.precio}"
+                                       required="true"
+                                       requiredMessage="El precio es obligatorio"
+                                       decimalPlaces="2"
+                                       minValue="0.01"
+                                       symbol="$ "
+                                       placeholder="0.00"/>
+
+                        <p:outputLabel for="proveedor" value="Proveedor:" style="font-weight:bold"/>
+                        <p:selectOneMenu id="proveedor"
+                                         value="#{productoBean.productoSeleccionado.proveedorId}"
+                                         required="true"
+                                         requiredMessage="Debe seleccionar un proveedor">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"/>
+                            <f:selectItems value="#{productoBean.proveedoresDisponibles}"
+                                           var="prov"
+                                           itemLabel="#{prov.razonSocial}"
+                                           itemValue="#{prov.id}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="activo" value="Activo:"/>
+                        <p:selectBooleanCheckbox id="activo"
+                                                 value="#{productoBean.productoSeleccionado.activo}"/>
+                    </p:panelGrid>
+                </div>
+
+                <f:facet name="footer">
+                    <div class="flex flex-wrap gap-2 justify-content-end">
+                        <p:commandButton value="Guardar"
+                                         icon="pi pi-save"
+                                         styleClass="ui-button-success"
+                                         action="#{productoBean.guardar()}"
+                                         update="dialogMessages :formProductos:tablaProductos :formProductos:growl"
+                                         process="@form"/>
+                        <p:commandButton value="Cancelar"
+                                         icon="pi pi-times"
+                                         styleClass="ui-button-secondary"
+                                         onclick="PF('dlgProducto').hide();"
+                                         type="button"/>
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+</html>

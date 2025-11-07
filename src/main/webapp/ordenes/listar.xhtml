@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="title">Gestión de Órdenes de Compra</ui:define>
+    <ui:define name="pageTitle">Órdenes de Compra</ui:define>
+
+    <ui:define name="head">
+        <style>
+            .dialog-content-scroll {
+                max-height: 450px;
+                overflow-y: auto;
+                padding-right: 10px;
+            }
+            .dialog-content-scroll::-webkit-scrollbar { width: 8px; }
+            .dialog-content-scroll::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            .dialog-content-scroll::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+            }
+            .dialog-content-scroll::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:panel header="Órdenes de Compra" styleClass="dashboard-panel">
+
+            <h:form id="formOrdenes">
+
+                <p:growl id="growl" showDetail="true" life="4000"/>
+
+                <!-- Toolbar -->
+                <p:toolbar styleClass="mb-3">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nueva Orden"
+                                         icon="pi pi-plus"
+                                         styleClass="ui-button-success"
+                                         action="#{ordenCompraBean.prepararNuevo()}"
+                                         update=":formDialogOrden"
+                                         oncomplete="PF('dlgOrden').show();"
+                                         process="@this"/>
+                        <p:commandButton value="Refrescar"
+                                         icon="pi pi-refresh"
+                                         styleClass="ui-button-info"
+                                         action="#{ordenCompraBean.cargarOrdenes()}"
+                                         update="tablaOrdenes growl"
+                                         process="@this"
+                                         style="margin-left:5px"/>
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">
+                        <p:selectOneMenu id="estadoFiltro"
+                                         value="#{ordenCompraBean.estadoFiltro}"
+                                         style="width:180px;margin-right:5px">
+                            <f:selectItem itemLabel="-- Estado --" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="PENDIENTE" itemValue="PENDIENTE"/>
+                            <f:selectItem itemLabel="APROBADA" itemValue="APROBADA"/>
+                            <f:selectItem itemLabel="RECIBIDA" itemValue="RECIBIDA"/>
+                            <f:selectItem itemLabel="CANCELADA" itemValue="CANCELADA"/>
+                        </p:selectOneMenu>
+
+                        <p:datePicker id="inicio"
+                                      value="#{ordenCompraBean.fechaInicio}"
+                                      pattern="dd/MM/yyyy"
+                                      showIcon="true"
+                                      placeholder="Inicio"
+                                      style="margin-right:5px"/>
+
+                        <p:datePicker id="fin"
+                                      value="#{ordenCompraBean.fechaFin}"
+                                      pattern="dd/MM/yyyy"
+                                      showIcon="true"
+                                      placeholder="Fin"
+                                      style="margin-right:5px"/>
+
+                        <p:commandButton value="Buscar"
+                                         icon="pi pi-search"
+                                         action="#{ordenCompraBean.buscar()}"
+                                         update="tablaOrdenes growl"
+                                         process="@this estadoFiltro inicio fin"
+                                         styleClass="ui-button-warning"/>
+
+                        <p:commandButton value="Limpiar"
+                                         icon="pi pi-times"
+                                         action="#{ordenCompraBean.limpiarFiltros()}"
+                                         update="tablaOrdenes estadoFiltro inicio fin"
+                                         process="@this"
+                                         styleClass="ui-button-secondary"
+                                         style="margin-left:5px"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <!-- Tabla de Órdenes -->
+                <p:dataTable id="tablaOrdenes"
+                             value="#{ordenCompraBean.ordenes}"
+                             var="orden"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No se encontraron órdenes"
+                             responsive="true"
+                             reflow="true">
+
+                    <p:column headerText="N°" sortBy="#{orden.numeroOrden}">
+                        <h:outputText value="#{orden.numeroOrden}" style="font-weight:600"/>
+                    </p:column>
+
+                    <p:column headerText="Proveedor" sortBy="#{orden.proveedor.razonSocial}">
+                        <h:outputText value="#{orden.proveedor != null ? orden.proveedor.razonSocial : ''}"/>
+                    </p:column>
+
+                    <p:column headerText="Fecha" sortBy="#{orden.fechaOrden}" style="width:130px">
+                        <h:outputText value="#{ordenCompraBean.formatFecha(orden.fechaOrden)}"/>
+                    </p:column>
+
+                    <p:column headerText="Estado" sortBy="#{orden.estado}" style="width:120px; text-align:center">
+                        <p:tag value="#{orden.estado}"
+                               severity="#{orden.estado eq 'PENDIENTE' ? 'warning' :
+                                           (orden.estado eq 'APROBADA' ? 'info' :
+                                           (orden.estado eq 'RECIBIDA' ? 'success' : 'danger'))}"/>
+                    </p:column>
+
+                    <p:column headerText="Subtotal" style="width:120px; text-align:right">
+                        <h:outputText value="#{orden.subtotal}">
+                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Total" style="width:120px; text-align:right">
+                        <h:outputText value="#{orden.total}" style="font-weight:600; color:#2196F3">
+                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Acciones" style="width:300px;text-align:center;">
+                        <p:commandButton icon="pi pi-pencil"
+                                         title="Editar"
+                                         styleClass="ui-button-warning p-button-sm"
+                                         action="#{ordenCompraBean.prepararEditar(orden)}"
+                                         update=":formDialogOrden"
+                                         oncomplete="PF('dlgOrden').show();"
+                                         process="@this"/>
+
+                        <p:splitButton value="Estado" icon="pi pi-sync" styleClass="p-button-sm" style="margin-left:5px">
+                            <p:menuitem value="PENDIENTE" icon="pi pi-hourglass"
+                                        actionListener="#{ordenCompraBean.cambiarEstado(orden, 'PENDIENTE')}"
+                                        update="tablaOrdenes growl"/>
+                            <p:menuitem value="APROBADA" icon="pi pi-check-circle"
+                                        actionListener="#{ordenCompraBean.cambiarEstado(orden, 'APROBADA')}"
+                                        update="tablaOrdenes growl"/>
+                            <p:menuitem value="RECIBIDA" icon="pi pi-box"
+                                        actionListener="#{ordenCompraBean.cambiarEstado(orden, 'RECIBIDA')}"
+                                        update="tablaOrdenes growl"/>
+                            <p:menuitem value="CANCELADA" icon="pi pi-times-circle"
+                                        actionListener="#{ordenCompraBean.cambiarEstado(orden, 'CANCELADA')}"
+                                        update="tablaOrdenes growl"/>
+                        </p:splitButton>
+
+                        <p:commandButton icon="pi pi-trash"
+                                         title="Eliminar"
+                                         styleClass="ui-button-danger p-button-sm"
+                                         action="#{ordenCompraBean.eliminar(orden)}"
+                                         update="tablaOrdenes growl"
+                                         process="@this"
+                                         style="margin-left:5px">
+                            <p:confirm header="Confirmación"
+                                       message="¿Eliminar esta orden?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                    <p:commandButton value="Sí" type="button"
+                                     styleClass="ui-confirmdialog-yes ui-button-success"/>
+                    <p:commandButton value="No" type="button"
+                                     styleClass="ui-confirmdialog-no ui-button-secondary"/>
+                </p:confirmDialog>
+
+            </h:form>
+        </p:panel>
+
+        <!-- Diálogo inline de Orden de Compra -->
+        <h:form id="formDialogOrden">
+            <p:dialog id="dialogOrden"
+                      header="#{ordenCompraBean.tituloDialogo}"
+                      widgetVar="dlgOrden"
+                      modal="true"
+                      responsive="true"
+                      width="900"
+                      closeOnEscape="true"
+                      resizable="false">
+
+                <p:messages id="dialogMessages" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+
+                <div class="dialog-content-scroll">
+                    <!-- Datos principales -->
+                    <p:panelGrid columns="4" layout="grid"
+                                 styleClass="ui-fluid"
+                                 columnClasses="col-12 md:col-3,col-12 md:col-3,col-12 md:col-3,col-12 md:col-3">
+
+                        <p:outputLabel for="numero" value="N° Orden" style="font-weight:bold"/>
+                        <p:inputText id="numero"
+                                     value="#{ordenCompraBean.ordenSeleccionada.numeroOrden}"
+                                     placeholder="OC-0001"/>
+
+                        <p:outputLabel for="fecha" value="Fecha" style="font-weight:bold"/>
+                        <p:datePicker id="fecha"
+                                      value="#{ordenCompraBean.ordenSeleccionada.fechaOrden}"
+                                      pattern="dd/MM/yyyy"
+                                      showIcon="true"
+                                      required="true"
+                                      requiredMessage="La fecha es obligatoria"/>
+
+                        <p:outputLabel for="proveedor" value="Proveedor" style="font-weight:bold"/>
+                        <p:selectOneMenu id="proveedor"
+                                         value="#{ordenCompraBean.ordenSeleccionada.proveedorId}"
+                                         required="true"
+                                         requiredMessage="Seleccione un proveedor">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"/>
+                            <f:selectItems value="#{ordenCompraBean.proveedoresDisponibles}"
+                                           var="prov"
+                                           itemLabel="#{prov.razonSocial}"
+                                           itemValue="#{prov.id}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="estado" value="Estado" style="font-weight:bold"/>
+                        <p:selectOneMenu id="estado"
+                                         value="#{ordenCompraBean.ordenSeleccionada.estado}">
+                            <f:selectItem itemLabel="PENDIENTE" itemValue="PENDIENTE"/>
+                            <f:selectItem itemLabel="APROBADA" itemValue="APROBADA"/>
+                            <f:selectItem itemLabel="RECIBIDA" itemValue="RECIBIDA"/>
+                            <f:selectItem itemLabel="CANCELADA" itemValue="CANCELADA"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="obs" value="Observaciones" style="font-weight:bold"/>
+                        <p:inputTextarea id="obs"
+                                         value="#{ordenCompraBean.ordenSeleccionada.observaciones}"
+                                         rows="2"
+                                         maxlength="500"
+                                         autoResize="true"
+                                         styleClass="col-12 md:col-9"/>
+                    </p:panelGrid>
+
+                    <p:separator/>
+
+                    <!-- Sección de detalles -->
+                    <h:panelGroup styleClass="grid" layout="block">
+                        <div class="col-12">
+                            <p:outputLabel value="Agregar Detalle"
+                                           style="font-weight:bold; display:block; margin-bottom:8px"/>
+
+                            <div class="formgrid grid">
+                                <div class="field col-12 md:col-5">
+                                    <p:outputLabel for="detProd" value="Producto"/>
+                                    <p:selectOneMenu id="detProd"
+                                                     value="#{ordenCompraBean.detalleProductoId}">
+                                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"/>
+                                        <f:selectItems value="#{ordenCompraBean.productosDisponibles}"
+                                                       var="prod"
+                                                       itemLabel="#{prod.codigo} - #{prod.nombre}"
+                                                       itemValue="#{prod.id}"/>
+                                        <p:ajax event="change"
+                                                listener="#{ordenCompraBean.onProductoDetalleChange}"
+                                                update="detPrecio"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="field col-6 md:col-2">
+                                    <p:outputLabel for="detCant" value="Cantidad"/>
+                                    <p:inputNumber id="detCant"
+                                                   value="#{ordenCompraBean.detalleCantidad}"
+                                                   minValue="1"
+                                                   decimalPlaces="0"/>
+                                </div>
+
+                                <div class="field col-6 md:col-2">
+                                    <p:outputLabel for="detPrecio" value="Precio Unit."/>
+                                    <p:inputNumber id="detPrecio"
+                                                   value="#{ordenCompraBean.detallePrecioUnitario}"
+                                                   minValue="0.01"
+                                                   decimalPlaces="2"
+                                                   symbol="$ "/>
+                                </div>
+
+                                <div class="field col-12 md:col-3"
+                                     style="display:flex; align-items:flex-end">
+                                    <p:commandButton value="Agregar"
+                                                     icon="pi pi-plus"
+                                                     styleClass="ui-button-success"
+                                                     action="#{ordenCompraBean.agregarDetalle()}"
+                                                     update="tablaDetalles totales dialogMessages"
+                                                     process="@this detProd detCant detPrecio"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <p:dataTable id="tablaDetalles"
+                                         value="#{ordenCompraBean.ordenSeleccionada.detalles}"
+                                         var="det"
+                                         emptyMessage="Sin detalles">
+
+                                <p:column headerText="Código" style="width:120px">
+                                    <h:outputText value="#{det.producto != null ? det.producto.codigo : ''}"/>
+                                </p:column>
+
+                                <p:column headerText="Producto">
+                                    <h:outputText value="#{det.producto != null ? det.producto.nombre : ''}"/>
+                                </p:column>
+
+                                <p:column headerText="Cant." style="width:90px; text-align:right">
+                                    <h:outputText value="#{det.cantidad}"/>
+                                </p:column>
+
+                                <p:column headerText="Precio" style="width:120px; text-align:right">
+                                    <h:outputText value="#{det.precioUnitario}">
+                                        <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Subtotal" style="width:120px; text-align:right">
+                                    <h:outputText value="#{det.subtotal}">
+                                        <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="" style="width:70px; text-align:center">
+                                    <p:commandButton icon="pi pi-trash"
+                                                     title="Eliminar"
+                                                     styleClass="ui-button-danger p-button-sm"
+                                                     action="#{ordenCompraBean.eliminarDetalle(det)}"
+                                                     update="tablaDetalles totales"
+                                                     process="@this"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </h:panelGroup>
+
+                    <p:separator/>
+
+                    <!-- Totales -->
+                    <h:panelGroup id="totales" styleClass="grid" layout="block">
+                        <div class="col-12 md:col-4 md:col-offset-8">
+                            <p:panelGrid columns="2"
+                                         columnClasses="col-6,col-6"
+                                         styleClass="ui-fluid"
+                                         style="width:100%">
+                                <h:outputText value="Subtotal:"
+                                              style="text-align:right; display:block"/>
+                                <h:outputText value="#{ordenCompraBean.ordenSeleccionada.subtotal}"
+                                              style="text-align:right">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                </h:outputText>
+
+                                <h:outputText value="IVA (12%):"
+                                              style="text-align:right; display:block"/>
+                                <h:outputText value="#{ordenCompraBean.ordenSeleccionada.iva}"
+                                              style="text-align:right">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                </h:outputText>
+
+                                <h:outputText value="Total:"
+                                              style="font-weight:bold; text-align:right; display:block"/>
+                                <h:outputText value="#{ordenCompraBean.ordenSeleccionada.total}"
+                                              style="text-align:right; font-weight:bold; color:#2196F3">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:panelGrid>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <f:facet name="footer">
+                    <div class="flex flex-wrap gap-2 justify-content-end">
+                        <p:commandButton value="Guardar"
+                                         icon="pi pi-save"
+                                         styleClass="ui-button-success"
+                                         action="#{ordenCompraBean.guardar()}"
+                                         update="dialogMessages :formOrdenes:tablaOrdenes :formOrdenes:growl"
+                                         process="@form"/>
+                        <p:commandButton value="Cancelar"
+                                         icon="pi pi-times"
+                                         styleClass="ui-button-secondary"
+                                         onclick="PF('dlgOrden').hide();"
+                                         type="button"/>
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+</html>

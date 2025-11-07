@@ -10,10 +10,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DTO para transferir información de Orden de Compra
+ * DTO para Orden de Compra (alineado al backend)
  */
 @Data
 @NoArgsConstructor
@@ -27,12 +28,21 @@ public class OrdenCompraDTO implements Serializable {
     private Long id;
     private String numeroOrden;
     private LocalDate fechaOrden;
-    private LocalDate fechaEntrega;
-    private String estado;
-    private BigDecimal totalOrden;
+
+    private String estado; // PENDIENTE/APROBADA/RECIBIDA/CANCELADA
+
+    private BigDecimal subtotal;
+    private BigDecimal iva;
+    private BigDecimal total;
+
     private String observaciones;
+
     private Long proveedorId;
-    private String proveedorRazonSocial;
+    private ProveedorResponseDTO proveedor; // para mostrar razonSocial
+
     private LocalDateTime fechaRegistro;
-    private List<DetalleOrdenDTO> detalles;
+    private LocalDateTime fechaActualizacion;
+
+    @Builder.Default
+    private List<DetalleOrdenDTO> detalles = new ArrayList<>();
 }

@@ -36,17 +36,14 @@
                     <p:submenu label="Dashboard" icon="pi pi-home" expanded="true">
                         <p:menuitem value="Inicio" icon="pi pi-chart-line"
                                     outcome="/index.xhtml"/>
-                        <p:menuitem value="Estadísticas" icon="pi pi-chart-bar"
-                                    disabled="true"/>
                     </p:submenu>
-
                     <p:submenu label="Gestión" icon="pi pi-briefcase" expanded="true">
                         <p:menuitem value="Proveedores" icon="pi pi-users"
                                     outcome="/proveedores/listar.xhtml"/>
                         <p:menuitem value="Productos" icon="pi pi-box"
-                                    disabled="true"/>
+                                    outcome="/productos/listar.xhtml"/>
                         <p:menuitem value="Órdenes de Compra" icon="pi pi-shopping-cart"
-                                    disabled="true"/>
+                                    outcome="/ordenes/listar.xhtml"/>
                     </p:submenu>
 
                     <p:submenu label="Reportes" icon="pi pi-file">
@@ -55,15 +52,6 @@
                         <p:menuitem value="Productos" icon="pi pi-file-excel"
                                     disabled="true"/>
                         <p:menuitem value="Órdenes" icon="pi pi-chart-pie"
-                                    disabled="true"/>
-                    </p:submenu>
-
-                    <p:submenu label="Configuración" icon="pi pi-cog">
-                        <p:menuitem value="Mi Perfil" icon="pi pi-user"
-                                    disabled="true"/>
-                        <p:menuitem value="Preferencias" icon="pi pi-sliders-h"
-                                    disabled="true"/>
-                        <p:menuitem value="Seguridad" icon="pi pi-lock"
                                     disabled="true"/>
                     </p:submenu>
 
@@ -79,26 +67,12 @@
                     <i class="pi pi-shield"></i>
                     <h:outputText value="#{authBean.usuarioActual.rol}"/>
                 </p>
-                <p>
-                    <i class="pi pi-calendar"></i>
-                    <h:outputText value="#{java.time.LocalDate.now()}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
-                    </h:outputText>
-                </p>
                 <p class="version">v1.0.0</p>
             </div>
 
             <!-- En el topbar, actualiza los botones: -->
             <div class="topbar-right">
                 <h:form>
-                    <p:commandButton icon="pi pi-bell"
-                                     styleClass="p-button-rounded p-button-text"
-                                     title="Notificaciones"/>
-
-                    <p:commandButton icon="pi pi-user"
-                                     styleClass="p-button-rounded p-button-text"
-                                     title="#{authBean.nombreUsuario}"/>
-
                     <p:commandButton value="Cerrar Sesión"
                                      icon="pi pi-sign-out"
                                      styleClass="ui-button-danger"

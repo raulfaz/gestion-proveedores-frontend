@@ -1,0 +1,68 @@
+/* Estilos específicos para productos */
+.tabla-moderna .ui-datatable-header {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: bold;
+    border: 1px solid #dee2e6;
+}
+
+.tabla-moderna tbody tr:hover {
+    background-color: #f1f3f5 !important;
+    cursor: pointer;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-card-icon.bg-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.stat-card-icon.bg-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.stat-card-icon.bg-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.stat-card-icon.bg-warning { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+.stat-card-content {
+    flex: 1;
+}
+
+.stat-card-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card-label {
+    color: #7f8c8d;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.dashboard-panel .ui-panel-titlebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
