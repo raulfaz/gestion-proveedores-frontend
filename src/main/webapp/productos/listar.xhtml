@@ -87,8 +87,8 @@
                         <h:outputText value="#{producto.descripcion}"
                                       style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:250px"/>
                     </p:column>
-                    <p:column headerText="Proveedor" sortBy="#{producto.proveedorRazonSocial}">
-                        <h:outputText value="#{producto.proveedorRazonSocial}"/>
+                    <p:column headerText="Proveedor" sortBy="#{productoBean.productoSeleccionado.proveedorId}">
+                        <h:outputText value="#{productoBean.productoSeleccionado.proveedorId}"/>
                     </p:column>
                     <p:column headerText="Precio" style="width:120px;text-align:right">
                         <h:outputText value="#{producto.precio}">
