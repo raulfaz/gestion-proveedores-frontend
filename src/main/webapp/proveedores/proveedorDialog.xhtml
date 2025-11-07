@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>#{proveedorDialogView.modoEdicion ? 'Editar' : 'Nuevo'} Proveedor</title>
+</h:head>
+
+<h:body>
+    <h:form id="formProveedorDialog">
+
+        <p:messages id="dialogMessages" closable="true"/>
+
+        <div style="padding: 1rem;">
+            <p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+
+                <p:outputLabel for="ruc" value="RUC:" style="font-weight: bold;"/>
+                <p:inputText id="ruc"
+                             value="#{proveedorDialogView.proveedor.ruc}"
+                             required="true"
+                             requiredMessage="El RUC es obligatorio"
+                             maxlength="13"
+                             placeholder="Ingrese el RUC"/>
+
+                <p:outputLabel for="razonSocial" value="Razón Social:" style="font-weight: bold;"/>
+                <p:inputText id="razonSocial"
+                             value="#{proveedorDialogView.proveedor.razonSocial}"
+                             required="true"
+                             requiredMessage="La razón social es obligatoria"
+                             maxlength="200"
+                             placeholder="Ingrese la razón social"/>
+
+                <p:outputLabel for="nombreComercial" value="Nombre Comercial:"/>
+                <p:inputText id="nombreComercial"
+                             value="#{proveedorDialogView.proveedor.nombreComercial}"
+                             maxlength="200"
+                             placeholder="Ingrese el nombre comercial"/>
+
+                <p:outputLabel for="direccion" value="Dirección:"/>
+                <p:inputTextarea id="direccion"
+                                 value="#{proveedorDialogView.proveedor.direccion}"
+                                 rows="2"
+                                 maxlength="500"
+                                 placeholder="Ingrese la dirección"/>
+
+                <p:outputLabel for="telefono" value="Teléfono:"/>
+                <p:inputText id="telefono"
+                             value="#{proveedorDialogView.proveedor.telefono}"
+                             maxlength="20"
+                             placeholder="Ej: 0999999999"/>
+
+                <p:outputLabel for="email" value="Email:"/>
+                <p:inputText id="email"
+                             value="#{proveedorDialogView.proveedor.email}"
+                             maxlength="100"
+                             placeholder="ejemplo@correo.com">
+                    <f:validateRegex pattern="^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$"/>
+                </p:inputText>
+
+                <p:outputLabel for="contacto" value="Persona de Contacto:"/>
+                <p:inputText id="contacto"
+                             value="#{proveedorDialogView.proveedor.contacto}"
+                             maxlength="200"
+                             placeholder="Nombre del contacto"/>
+
+                <p:outputLabel for="activo" value="Activo:"/>
+                <p:selectBooleanCheckbox id="activo"
+                                         value="#{proveedorDialogView.proveedor.activo}"/>
+
+            </p:panelGrid>
+
+            <div style="text-align: right; margin-top: 1.5rem;">
+                <p:commandButton value="Guardar"
+                                 icon="pi pi-save"
+                                 styleClass="ui-button-success"
+                                 action="#{proveedorDialogView.guardar()}"
+                                 update="dialogMessages"
+                                 process="@form"
+                                 style="margin-right: 0.5rem;"/>
+
+                <p:commandButton value="Cancelar"
+                                 icon="pi pi-times"
+                                 styleClass="ui-button-secondary"
+                                 action="#{proveedorDialogView.cancelar()}"
+                                 process="@this"
+                                 immediate="true"/>
+            </div>
+        </div>
+
+    </h:form>
+</h:body>
+
+</html>
