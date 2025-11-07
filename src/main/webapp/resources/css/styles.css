@@ -1062,3 +1062,139 @@ body {
         max-width: 100%;
     }
 }
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   RESPONSIVE DIALOG - PRIMEFLEX INTEGRATION
+   ============================================ */
+
+/* Dialog Responsive Styles */
+.dialog-responsive .ui-dialog-content {
+    padding: 1.5rem !important;
+}
+
+/* PrimeFlex Grid en Dialogs */
+.dialog-responsive .formgrid {
+    margin: 0 -0.5rem;
+}
+
+.dialog-responsive .field {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.dialog-responsive .field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.dialog-responsive .field label.font-bold {
+    font-weight: 700;
+}
+
+/* Input Fields en Dialog */
+.dialog-responsive .w-full {
+    width: 100% !important;
+}
+
+.dialog-responsive .ui-inputfield {
+    width: 100%;
+    padding: 0.75rem !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    transition: var(--transition) !important;
+    font-size: 0.9375rem;
+}
+
+.dialog-responsive .ui-inputfield:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Checkbox en Dialog */
+.dialog-responsive .ui-chkbox {
+    margin-right: 0.5rem;
+}
+
+.dialog-responsive .ui-chkbox-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Footer del Dialog */
+.dialog-responsive .ui-dialog-footer {
+    padding: 1.25rem 1.5rem !important;
+    background: var(--content-bg) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.dialog-responsive .ui-dialog-footer .flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Mensajes en Dialog */
+.dialog-responsive .ui-messages {
+    margin-bottom: 1rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .dialog-responsive {
+        width: 95vw !important;
+        max-width: 95vw !important;
+    }
+
+    .dialog-responsive .ui-dialog-content {
+        padding: 1rem !important;
+    }
+
+    .dialog-responsive .field {
+        padding: 0.375rem;
+    }
+
+    .dialog-responsive .ui-dialog-footer .flex {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .dialog-responsive .ui-dialog-footer .ui-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .dialog-responsive .ui-dialog-titlebar {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }
+
+    .dialog-responsive .ui-inputfield {
+        font-size: 0.875rem;
+        padding: 0.625rem !important;
+    }
+}

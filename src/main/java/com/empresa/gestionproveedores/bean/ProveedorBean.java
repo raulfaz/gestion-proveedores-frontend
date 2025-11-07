@@ -16,7 +16,6 @@ import org.primefaces.PrimeFaces;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,18 +43,13 @@ public class ProveedorBean implements Serializable {
     private String criterioBusqueda;
 
     @Getter
-    private List<String> funcionalidades;
+    @Setter
+    private boolean dialogoVisible = false;
 
     @PostConstruct
     public void init() {
         try {
             cargarProveedores();
-            funcionalidades = Arrays.asList(
-                    "Gestión completa de proveedores (CRUD)",
-                    "Búsqueda y filtros avanzados",
-                    "Activación/Desactivación de proveedores",
-                    "Validaciones en tiempo real"
-            );
             log.info("ProveedorBean inicializado correctamente");
         } catch (Exception e) {
             log.error("Error al inicializar ProveedorBean", e);
@@ -64,96 +58,104 @@ public class ProveedorBean implements Serializable {
     }
 
     /**
-     * Abre el Dynamic Dialog para CREAR un nuevo proveedor
+     * Prepara para crear un NUEVO proveedor
      */
-    public void abrirDialogNuevo() {
+    public void prepararNuevo() {
         try {
-            log.info("Intentando abrir dialog para nuevo proveedor");
-
-            Map<String, Object> options = new HashMap<>();
-            options.put("modal", true);
-            options.put("width", 700);
-            options.put("height", 600);
-            options.put("resizable", false);
-            options.put("contentWidth", "100%");
-            options.put("contentHeight", "100%");
-
-            Map<String, List<String>> params = new HashMap<>();
-
-            PrimeFaces.current().dialog().openDynamic(
-                    "proveedorDialog",
-                    options,
-                    params
-            );
-
-            log.info("Dialog abierto exitosamente para crear nuevo proveedor");
+            proveedorSeleccionado = new ProveedorDTO();
+            proveedorSeleccionado.setActivo(true);
+            dialogoVisible = true;
+            log.info("Preparado para crear nuevo proveedor");
         } catch (Exception e) {
-            log.error("Error al abrir dialog", e);
-            mostrarMensajeError("Error al abrir el formulario: " + e.getMessage());
+            log.error("Error al preparar nuevo proveedor", e);
+            mostrarMensajeError("Error al abrir formulario");
         }
     }
 
     /**
-     * Abre el Dynamic Dialog para EDITAR un proveedor existente
+     * Prepara para EDITAR un proveedor existente
      */
-    public void abrirDialogEditar(ProveedorDTO proveedor) {
+    public void prepararEditar(ProveedorDTO proveedor) {
         try {
-            log.info("Intentando abrir dialog para editar proveedor ID: {}", proveedor.getId());
+            // Clonar el proveedor para edición
+            proveedorSeleccionado = new ProveedorDTO();
+            proveedorSeleccionado.setId(proveedor.getId());
+            proveedorSeleccionado.setRuc(proveedor.getRuc());
+            proveedorSeleccionado.setRazonSocial(proveedor.getRazonSocial());
+            proveedorSeleccionado.setNombreComercial(proveedor.getNombreComercial());
+            proveedorSeleccionado.setDireccion(proveedor.getDireccion());
+            proveedorSeleccionado.setTelefono(proveedor.getTelefono());
+            proveedorSeleccionado.setEmail(proveedor.getEmail());
+            proveedorSeleccionado.setContacto(proveedor.getContacto());
+            proveedorSeleccionado.setActivo(proveedor.getActivo());
 
-            // Guardar en sesión
-            FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getSessionMap()
-                    .put("proveedorEditar", proveedor);
-
-            Map<String, Object> options = new HashMap<>();
-            options.put("modal", true);
-            options.put("width", 700);
-            options.put("height", 600);
-            options.put("resizable", false);
-            options.put("contentWidth", "100%");
-            options.put("contentHeight", "100%");
-
-            Map<String, List<String>> params = new HashMap<>();
-            params.put("modoEdicion", Arrays.asList("true"));
-
-            PrimeFaces.current().dialog().openDynamic(
-                    "proveedorDialog",
-                    options,
-                    params
-            );
-
-            log.info("Dialog abierto exitosamente para editar proveedor ID: {}", proveedor.getId());
+            dialogoVisible = true;
+            log.info("Preparado para editar proveedor ID: {}", proveedor.getId());
         } catch (Exception e) {
-            log.error("Error al abrir dialog de edición", e);
-            mostrarMensajeError("Error al abrir el formulario: " + e.getMessage());
+            log.error("Error al preparar edición", e);
+            mostrarMensajeError("Error al abrir formulario de edición");
         }
     }
 
     /**
-     * Callback cuando se cierra el dialog
+     * Guarda el proveedor (crear o actualizar)
      */
-    public void onDialogReturn(org.primefaces.event.SelectEvent<?> event) {
+    public void guardar() {
         try {
-            Object obj = event.getObject();
-            log.info("Dialog retornó: {}", obj);
+            if (validarProveedor()) {
+                if (proveedorSeleccionado.getId() != null) {
+                    // Actualizar
+                    proveedorService.actualizar(proveedorSeleccionado.getId(), proveedorSeleccionado);
+                    mostrarMensajeExito("Proveedor actualizado exitosamente");
+                    log.info("Proveedor actualizado: {}", proveedorSeleccionado.getRazonSocial());
+                } else {
+                    // Crear
+                    proveedorService.crear(proveedorSeleccionado);
+                    mostrarMensajeExito("Proveedor creado exitosamente");
+                    log.info("Proveedor creado: {}", proveedorSeleccionado.getRazonSocial());
+                }
 
-            if (obj instanceof ProveedorDTO) {
-                ProveedorDTO proveedor = (ProveedorDTO) obj;
+                cerrarDialogo();
                 cargarProveedores();
-                mostrarMensajeExito("Proveedor guardado: " + proveedor.getRazonSocial());
-            } else {
-                log.info("Dialog cerrado sin guardar");
             }
+        } catch (ServiceException e) {
+            log.error("Error al guardar proveedor", e);
+            mostrarMensajeError("Error al guardar: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Error en callback del dialog", e);
-        } finally {
-            // Limpiar sesión
-            FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getSessionMap()
-                    .remove("proveedorEditar");
+            log.error("Error inesperado al guardar", e);
+            mostrarMensajeError("Error inesperado al guardar");
         }
+    }
+
+    /**
+     * Valida los datos del proveedor
+     */
+    private boolean validarProveedor() {
+        if (proveedorSeleccionado.getRuc() == null || proveedorSeleccionado.getRuc().trim().isEmpty()) {
+            mostrarMensajeAdvertencia("El RUC es obligatorio");
+            return false;
+        }
+
+        if (proveedorSeleccionado.getRazonSocial() == null || proveedorSeleccionado.getRazonSocial().trim().isEmpty()) {
+            mostrarMensajeAdvertencia("La razón social es obligatoria");
+            return false;
+        }
+
+        if (proveedorSeleccionado.getRuc().length() > 13) {
+            mostrarMensajeAdvertencia("El RUC no puede tener más de 13 caracteres");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Cierra el diálogo
+     */
+    public void cerrarDialogo() {
+        dialogoVisible = false;
+        proveedorSeleccionado = null;
+        PrimeFaces.current().executeScript("PF('dlgProveedor').hide();");
     }
 
     public void cargarProveedores() {
@@ -229,6 +231,12 @@ public class ProveedorBean implements Serializable {
                 proveedores.stream().filter(p -> p.getActivo() != null && p.getActivo()).count() : 0;
     }
 
+    public String getTituloDialogo() {
+        return proveedorSeleccionado != null && proveedorSeleccionado.getId() != null
+                ? "Editar Proveedor"
+                : "Nuevo Proveedor";
+    }
+
     private void mostrarMensajeExito(String mensaje) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", mensaje));
@@ -237,5 +245,10 @@ public class ProveedorBean implements Serializable {
     private void mostrarMensajeError(String mensaje) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", mensaje));
+    }
+
+    private void mostrarMensajeAdvertencia(String mensaje) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", mensaje));
     }
 }
